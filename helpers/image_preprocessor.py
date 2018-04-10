@@ -2,6 +2,7 @@
 import numpy as np
 from skimage.transform import resize as ski_resize
 
+
 class ImagePreprocessor:
 
     @staticmethod
