@@ -3,7 +3,7 @@ import numpy as np
 from skimage.transform import resize as ski_resize
 
 
-class ImagePreprocessor:
+class ImageTransform:
 
     @staticmethod
     def square_crop_image(image):
@@ -17,11 +17,11 @@ class ImagePreprocessor:
     @staticmethod
     def zero_pad(inputs, pad_size, is_batch=True):
         if is_batch:
-            padded = np.pad(inputs, ((0, 0), (pad_size, pad_size), (pad_size, pad_size), (0, 0)), 'constant', constant_values=0)
+            padded_image = np.pad(inputs, ((0, 0), (pad_size, pad_size), (pad_size, pad_size), (0, 0)), 'constant', constant_values=0)
         else:
-            padded = np.pad(inputs, ((pad_size, pad_size), (pad_size, pad_size), (0, 0)), 'constant', constant_values=0)
+            padded_image = np.pad(inputs, ((pad_size, pad_size), (pad_size, pad_size), (0, 0)), 'constant', constant_values=0)
 
-        return padded
+        return padded_image
 
     @staticmethod
     def resize_image(image, new_size):
