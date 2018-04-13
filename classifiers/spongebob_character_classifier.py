@@ -10,17 +10,24 @@ class SpongebobCharacterClassifier:
 
     def __init__(self,
                  data: DataModel,
-
+                 epochs: int,
+                 layers: list
                  ):
         self.data = data
+        self.epochs = epochs
+        self.layers = layers
 
     # train model using this CNN architecture: X -> CONV -> RELU -> POOL -> FC -> SOFTMAX
     def train(self):
         # preprocess inputs (x)
         self.x_train = dps.preprocess_imageset(self.data.x_train)
 
-        # initialize layer objects
-        self
+        # loop over layer objects calling their forward propogate methods
+        for epoch in range(self.epochs):
+            a_prev = self.x_train
+            for i, layer in enumerate(self.layers):
+                a_prev, cache = layer.forward_propogate(a_prev)
+                self.layers[i] = layer  # layer has been updated with cache
 
-    def initialize_layer_objects(self):
-        
+
+

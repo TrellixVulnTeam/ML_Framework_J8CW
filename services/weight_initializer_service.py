@@ -5,7 +5,7 @@ import helpers.epsilon_initialize as ei
 class WeightInitializerService:
 
     @staticmethod
-    def random_initialize_filters(filter_dimentions, initializer):
+    def random_initialize_filters(filter_dimentions: list):
         # open filter dimensions
         f_size, f_count = filter_dimentions
 

@@ -1,6 +1,6 @@
 # the model object for a CONV Layer
 from models.conv_filter_model import CONVFilterModel
-
+from services.weight_initializer_service import WeightInitializerService
 
 class CONVLayerModel:
 
@@ -11,7 +11,8 @@ class CONVLayerModel:
         self.conv_filter = conv_filter
         self.stride = stride
         self.padding = padding
+        self.weights = WeightInitializerService.random_initialize_filters([conv_filter.filter_size, conv_filter.filter_count])
 
-    def forward_propogate(self, inputs: list):
-        outputs = []
-        return outputs
+    def forward_propogate(self, a_prev: list):
+        a = []
+        return a
