@@ -1,5 +1,5 @@
 # service to preprocesses images
-from helpers.image_transform import ImageTransform as it
+import helpers.image_transform as it
 
 
 class DataPreprocessorService:
