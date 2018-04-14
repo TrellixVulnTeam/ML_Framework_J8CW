@@ -83,7 +83,7 @@ class CONVLayerModel:
         n_H = int(((n_H_prev - filter_size + 2 * pad_size) / stride_size) + 1)
         n_W = int(((n_W_prev - filter_size + 2 * pad_size) / stride_size) + 1)
 
-        return [n_H, n_W]
+        return n_H, n_W
 
     def get_pad_size(self):
         pad = self.conv_filter.filter_size if self.padding == 'SAME' else 0
