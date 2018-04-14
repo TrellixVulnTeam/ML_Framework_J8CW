@@ -19,12 +19,9 @@ class SpongebobCharacterClassifier:
 
     # train model using this CNN architecture: X -> CONV -> RELU -> POOL -> FC -> SOFTMAX
     def train(self):
-        # preprocess inputs (x)
-        self.x_train = dps.preprocess_imageset(self.data.x_train)
-
         # loop over layer objects calling their forward propogate methods
         for epoch in range(self.epochs):
-            a_prev = self.x_train
+            a_prev = self.data.x_train
             for i, layer in enumerate(self.layers):
                 a_prev, cache = layer.forward_propogate(a_prev)
                 self.layers[i] = layer  # layer has been updated with cache

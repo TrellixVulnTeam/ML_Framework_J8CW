@@ -13,7 +13,7 @@ class WeightInitializerService:
         e_init = ei.epsilon_init(filter_dimentions)
 
         # compute random weights
-        w = np.random.rand(f_size, f_size, f_count).dot(2).dot(e_init).dot(e_init)
+        W = np.random.rand(f_size, f_size, f_count).dot(2).dot(e_init).dot(e_init)
         b = np.random.rand(1, 1, 1).dot(2).dot(e_init).dot(e_init)
 
-        return [w, b]
+        return [W, b]

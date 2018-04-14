@@ -1,12 +1,13 @@
 # model structure for the data to pass to classifier
+from services.data_preprocessor_service import DataPreprocessorService as dps
 
 
 class DataModel:
 
-    def __init__(self, x_train, y_train, x_val, y_val, x_test, y_test):
-        self.x_train = x_train
-        self.y_train = y_train
-        self.x_val = x_val
-        self.y_val = y_val
-        self.x_test = x_test
-        self.y_test = y_test
+    def __init__(self, data: dict, pad: int, image_size: list):
+        self.x_train = dps.preprocess_imageset(data['x_train'], image_size, pad)
+        self.y_train = dps.preprocess_imageset(data['y_train'], image_size, pad)
+        self.x_val = dps.preprocess_imageset(data['x_val'], image_size, pad)
+        self.y_val = dps.preprocess_imageset(data['y_val'], image_size, pad)
+        self.x_test = dps.preprocess_imageset(data['x_test'], image_size, pad)
+        self.y_test = dps.preprocess_imageset(data['y_test'], image_size, pad)
