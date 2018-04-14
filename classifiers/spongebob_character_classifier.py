@@ -23,7 +23,7 @@ class SpongebobCharacterClassifier:
         for epoch in range(self.epochs):
             a_prev = self.data.x_train
             for i, layer in enumerate(self.layers):
-                a_prev, cache = layer.forward_propogate(a_prev)
+                a_prev = layer.forward_propogate(a_prev)
                 self.layers[i] = layer  # layer has been updated with cache
 
 

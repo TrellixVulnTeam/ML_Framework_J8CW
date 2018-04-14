@@ -69,8 +69,7 @@ class CONVLayerModel:
         # return convolved output
         return Z
 
-    @staticmethod
-    def forward_single_step(a_prev_slice, W, b):
+    def forward_single_step(self, a_prev_slice, W, b):
         s = np.multiply(a_prev_slice, W)
         Z = np.sum(s)
         Z += float(b)
@@ -87,11 +86,7 @@ class CONVLayerModel:
         return [n_H, n_W]
 
     def get_pad_size(self):
-        if self.padding == 'SAME':
-            pad = self.conv_filter.filter_size
-        if self.padding == 'VALID':
-            pad = 0
-
+        pad = self.conv_filter.filter_size if self.padding == 'SAME' else 0
         return pad
 
     def get_stride_size(self):
