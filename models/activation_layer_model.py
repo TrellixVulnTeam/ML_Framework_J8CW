@@ -15,12 +15,23 @@ class ActivationLayerModel:
             self.sigmoid_activate(A_prev)
         elif self.activation == 'tanh':
             self.tanh_activate(A_prev)
+        elif self.activation == 'softmax':
+            self.softmax_activation(A_prev)
 
-    def relu_activate(self, x):
+    @staticmethod
+    def relu_activate(x):
         return np.maximum(x, 0)
 
-    def sigmoid_activate(self, x):
+    @staticmethod
+    def sigmoid_activate(x):
         return 1 / (1 + np.exp(-x))
 
-    def tanh_activate(self, x):
+    @staticmethod
+    def tanh_activate(x):
         return np.tanh(x)
+
+    @staticmethod
+    def softmax_activation(x):
+        e_x = np.exp(x - np.max(x))
+
+        return e_x / e_x.sum()
