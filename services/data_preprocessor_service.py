@@ -20,9 +20,10 @@ class DataPreprocessorService:
                 c_images.append(imread(directory + '/' + image))
                 c_labels.append(c)
 
+            # pack into dict
             c_image_data = {
-                'images': c_images,
-                'labels': c_labels
+                'x': c_images,
+                'y': c_labels
             }
 
             imagesets.append(c_image_data)
@@ -37,29 +38,33 @@ class DataPreprocessorService:
         merged_images = []
         merged_labels = []
         for imageset in imagesets:
-            merged_images += imageset['images']
-            merged_labels += imageset['labels']
+            merged_images += imageset['x']
+            merged_labels += imageset['y']
 
         return {
-            'images': merged_images,
-            'labels': merged_labels
+            'x': merged_images,
+            'y': merged_labels
         }
 
     @staticmethod
     def preprocess_imageset(imageset, image_size: list, pad):
-        for image in imageset:
-            imageset[image] = it.square_crop_image(imageset[image])
-            imageset[image] = it.resize_image(imageset[image], image_size)
+        processed_imageset = np.zeros((len(imageset), image_size[0], image_size[1], imageset[0].shape[2]))
+        for i, image in enumerate(imageset):
+            image = image[:, :, 0:3]
+            image = it.square_crop_image(image)
+            image = it.resize_image(image, image_size)
 
-        return imageset
+            processed_imageset[i, :, :, :] = image
+
+        return processed_imageset
 
     @staticmethod
     def unison_shuffle_images_labels(images: list, labels: list):
         results = utils.shuffle(images, labels, random_state=np.random.randint(10))
 
         return {
-            'images': results[0],
-            'labels': results[1]
+            'x': results[0],
+            'y': results[1]
         }
 
     @staticmethod

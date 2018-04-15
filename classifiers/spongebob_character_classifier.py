@@ -20,7 +20,7 @@ class SpongebobCharacterClassifier:
 
     # train model using this CNN architecture: X (-> CONV -> RELU -> POOL) x 2 ... -> FC -> SOFTMAX
     def train(self):
-        A_prev = np.zeros(self.data.x_train.shape)
+        A_prev = np.zeros(self.data.x.shape)
         # loop over layer objects calling their forward propogate methods
         for epoch in range(self.epochs):
             # forward propogate and get predictions
@@ -35,7 +35,7 @@ class SpongebobCharacterClassifier:
 
 
     def forward_propogate(self):
-        A_prev = self.data.x_train
+        A_prev = self.data.x
         for i, layer in enumerate(self.layers):
             A_prev = layer.forward_propogate(A_prev)
             self.layers[i] = layer  # layer has been updated with cache
@@ -44,7 +44,7 @@ class SpongebobCharacterClassifier:
 
     def compute_cost(self, y_prediction):
         # todo: actual cost function
-        return np.sum(self.data.y_train - y_prediction)
+        return np.sum(self.data.y - y_prediction)
 
     def back_propogation(self, cost):
         return 0

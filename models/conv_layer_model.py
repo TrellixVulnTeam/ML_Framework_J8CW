@@ -23,7 +23,7 @@ class CONVLayerModel:
         f, f, n_C_prev, n_C = self.W.shape
 
         # get height and width of output
-        n_H, n_W = self.compute_output_dimensions(n_H_prev, n_W_prev, f)
+        n_H, n_W = self.compute_output_dimensions(n_H_prev, n_W_prev)
 
         # initialize output volume as zeros
         Z = np.zeros((m, n_H, n_W, n_C))
@@ -76,7 +76,7 @@ class CONVLayerModel:
 
         return Z
 
-    def compute_output_dimensions(self, n_H_prev: int, n_W_prev:int, filter_size:int):
+    def compute_output_dimensions(self, n_H_prev: int, n_W_prev: int):
         pad_size = self.get_pad_size()
         stride_size = self.get_stride_size()
         filter_size = self.get_filter_size()

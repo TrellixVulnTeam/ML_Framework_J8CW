@@ -1,13 +1,17 @@
 # the test process for the spongebob character classifier
-import numpy as np
+
+from services.data_preprocessor_service import DataPreprocessorService
 from classifiers.spongebob_character_classifier import SpongebobCharacterClassifier
 from models import *
 
 
 class SpongebobCharacterClassifierTest:
 
-    def __init__(self, dataset):
-        self.data_model = data_model.DataModel(dataset, 2, [64, 64])
+    def __init__(self, training_phase: str = 'train'):
+        imagesets = DataPreprocessorService.load_imagesets(training_phase)
+        imageset = DataPreprocessorService.merge_imagesets(imagesets)
+        shuffled_imageset = DataPreprocessorService.unison_shuffle_images_labels(imageset['x'], imageset['y'])
+        self.data_model = data_model.DataModel(shuffled_imageset, max(imageset['y']) + 1, 2, [64, 64])
 
     def run(self):
         # conv layer 1
