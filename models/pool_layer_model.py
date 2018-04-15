@@ -38,20 +38,22 @@ class PoolLayerModel:
             for h in range(n_H):
                 # loop over horizontal axis of example
                 for w in range(n_W):
-                    # find the corners of the slice
-                    vert_start = h * stride
-                    vert_end = vert_start + f
-                    horiz_start = w * stride
-                    horiz_end = horiz_start + f
+                    # loop over all channels
+                    for c in range(n_C):
+                        # find the corners of the slice
+                        vert_start = h * stride
+                        vert_end = vert_start + f
+                        horiz_start = w * stride
+                        horiz_end = horiz_start + f
 
-                    # use corners to get slice of example to pool over
-                    a_prev_slice = a_prev[vert_start:vert_end, horiz_start:horiz_end, c]
+                        # use corners to get slice of example to pool over
+                        a_prev_slice = a_prev[vert_start:vert_end, horiz_start:horiz_end, c]
 
-                    # compute pool operation based on model's mode attra
-                    if self.mode == 'max':
-                        A[i, h, w, c] = a_prev_slice.max()
-                    elif self.mode == 'average':
-                        A[i, h, w, c] = a_prev_slice.mean()
+                        # compute pool operation based on model's mode attra
+                        if self.mode == 'max':
+                            A[i, h, w, c] = a_prev_slice.max()
+                        elif self.mode == 'average':
+                            A[i, h, w, c] = a_prev_slice.mean()
 
         self.cache = {
             'A_prev': A_prev,

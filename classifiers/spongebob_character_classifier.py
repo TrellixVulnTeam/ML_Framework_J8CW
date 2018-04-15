@@ -24,7 +24,7 @@ class SpongebobCharacterClassifier:
         # loop over layer objects calling their forward propogate methods
         for epoch in range(self.epochs):
             # forward propogate and get predictions
-            y_pred = self.forward_progate()
+            y_pred = self.forward_propogate()
 
             # compute the cost and use it in the backpropogation phase
             cost = self.compute_cost(y_pred)
