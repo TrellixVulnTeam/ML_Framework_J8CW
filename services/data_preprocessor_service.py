@@ -5,6 +5,10 @@ import helpers.image_transform as it
 class DataPreprocessorService:
 
     @staticmethod
+    def load_imagesets():
+        gary_images =
+
+    @staticmethod
     def preprocess_imageset(imageset, image_size: list, pad):
         for image in imageset:
             imageset[image] = it.square_crop_image(imageset[image])

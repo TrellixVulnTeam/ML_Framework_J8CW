@@ -7,8 +7,7 @@ from models import *
 class SpongebobCharacterClassifierTest:
 
     def __init__(self, dataset):
-        self.dataset = dataset
-        self.data_model = data_model.DataModel(self.dataset, 2, [64, 64])
+        self.data_model = data_model.DataModel(dataset, 2, [64, 64])
 
     def run(self):
         # conv layer 1
