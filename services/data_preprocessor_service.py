@@ -1,6 +1,7 @@
 # service to preprocesses images
 import helpers.image_transform as it
 from skimage.data import imread
+import sklearn.utils as utils
 from os import listdir
 import numpy as np
 
@@ -35,7 +36,14 @@ class DataPreprocessorService:
     def merge_imagesets(imagesets: list):
         merged_images = []
         merged_labels = []
+        for imageset in imagesets:
+            merged_images += imageset['images']
+            merged_labels += imageset['labels']
 
+        return {
+            'images': merged_images,
+            'labels': merged_labels
+        }
 
     @staticmethod
     def preprocess_imageset(imageset, image_size: list, pad):
@@ -44,6 +52,15 @@ class DataPreprocessorService:
             imageset[image] = it.resize_image(imageset[image], image_size)
 
         return imageset
+
+    @staticmethod
+    def unison_shuffle_images_labels(images: list, labels: list):
+        results = utils.shuffle(images, labels, random_state=np.random.randint(10))
+
+        return {
+            'images': results[0],
+            'labels': results[1]
+        }
 
     @staticmethod
     def one_hot_encode(labels, num_classes):
