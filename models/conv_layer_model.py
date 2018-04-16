@@ -76,6 +76,59 @@ class CONVLayerModel:
 
         return Z
 
+    def backward_propogate(self, dZ):
+        # get info from cache
+        A_prev = self.cache['A_prev']
+        W = self.cache['W']
+        b = self.cache['b']
+        stride = self.cache['hparameters']['stride']
+        pad = self.cache['hparameters']['pad']
+
+        # get A_prev and W dimensions
+        m, n_H_prev, n_W_prev, n_C_prev = A_prev.shape
+        f, f, n_C_prev, n_C = W.shape
+
+        # retrieve dZ's dims
+        m, n_H, n_W, n_C = dZ.shape
+
+        # initialize placeholder matrices
+        dA_prev = np.zeros((m, n_H_prev, n_W_prev, n_C_prev))
+        dW = np.zeros((f, f, n_C_prev, n_C))
+        db = np.zeros((1, 1, 1, n_C))
+
+        # pad A_prev and dA_prev
+        A_prev_pad = it.zero_pad(A_prev, pad)
+        dA_prev_pad = it.zero_pad(dA_prev, pad)
+
+        for i in range(m):
+            # select ith training example from padded A_prev and dA_prev
+            a_prev_pad = A_prev_pad[i]
+            da_prev_pad = dA_prev_pad[i]
+
+            # loop over vert axis of output volume
+            for h in range(n_H):
+                # loop over horiz axis of output volume
+                for w in range(n_W):
+                    # loop over the channels of the output volume
+                    for c in range(n_C):
+                        # find the corners of the slice to select
+                        vert_start = h * stride
+                        vert_end = vert_start + f
+                        horiz_start = w * stride
+                        horiz_end = horiz_start + f
+
+                        # select the slice of the input volume (A_prev_pad)
+                        a_slice = a_prev_pad[vert_start:vert_end, horiz_start:horiz_end, :]
+
+                        # update grads for the slice and the filter's params
+                        da_prev_pad[vert_start:vert_end, horiz_start:horiz_end, :] += W[:, :, :, c] * dZ[i, h, w, c]
+                        dW[:, :, :, c] += a_slice * dZ[i, h, w, c]
+                        db[:, :, :, c] += dZ[i, h, w, c]
+
+            dA_prev[i, :, :, :] = da_prev_pad[pad:-pad, pad:-pad, :]
+
+        return dA_prev, dW, db
+
     def compute_output_dimensions(self, n_H_prev: int, n_W_prev: int):
         pad_size = self.get_pad_size()
         stride_size = self.get_stride_size()

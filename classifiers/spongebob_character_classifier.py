@@ -45,8 +45,6 @@ class SpongebobCharacterClassifier:
             A_prev = layer.forward_propogate(A_prev)
             self.layers[i] = layer  # layer has been updated with cache
 
-        print(self.layers[i-2].cache)
-
         return A_prev
 
     def compute_cost(self, y_prediction):
