@@ -2,6 +2,7 @@
 import numpy as np
 from models.data_model import DataModel
 from services.data_preprocessor_service import DataPreprocessorService as dps
+from helpers.prediction_helper import PredictionHelper
 
 
 class SpongebobCharacterClassifier:
@@ -17,6 +18,7 @@ class SpongebobCharacterClassifier:
         self.epochs = epochs
         self.layers = layers
         self.prediction = None
+        self.y_pred = []
 
     # train model using this CNN architecture: X (-> CONV -> RELU -> POOL) x 2 ... -> FC -> SOFTMAX
     def train(self):
@@ -24,10 +26,13 @@ class SpongebobCharacterClassifier:
         # loop over layer objects calling their forward propogate methods
         for epoch in range(self.epochs):
             # forward propogate and get predictions
-            y_pred = self.forward_propogate()
+            Z = self.forward_propogate()
+
+            # make prediction
+            self.y_pred = PredictionHelper.predict(Z)
 
             # compute the cost and use it in the backpropogation phase
-            cost = self.compute_cost(y_pred)
+            # cost = self.compute_cost(y_pred)
 
             # use cost to perform backpropogations across the layers
 
@@ -37,9 +42,10 @@ class SpongebobCharacterClassifier:
     def forward_propogate(self):
         A_prev = self.data.x
         for i, layer in enumerate(self.layers):
-            print(A_prev.shape)
             A_prev = layer.forward_propogate(A_prev)
             self.layers[i] = layer  # layer has been updated with cache
+
+        print(self.layers[i-2].cache)
 
         return A_prev
 

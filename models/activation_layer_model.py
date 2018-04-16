@@ -7,20 +7,26 @@ class ActivationLayerModel:
     def __init__(self,
                  activation: str):
         self.activation = activation
+        self.cache = {}
 
-    def forward_propogate(self, A_prev):
+    def forward_propogate(self, A):
         if self.activation == 'relu':
-             A_prev_activated = self.relu_activate(A_prev)
+            A_activated = self.relu_activate(A)
         elif self.activation == 'sigmoid':
-            A_prev_activated = self.sigmoid_activate(A_prev)
+            A_activated = self.sigmoid_activate(A)
         elif self.activation == 'tanh':
-            A_prev_activated =self.tanh_activate(A_prev)
+            A_activated =self.tanh_activate(A)
         elif self.activation == 'softmax':
-            A_prev_activated = self.softmax_activation(A_prev)
+            A_activated = self.softmax_activation(A)
         else:
-            A_prev_activated = A_prev
+            A_activated = A
 
-        return A_prev_activated
+        self.cache = {
+            'A': A,
+            'A_activated': A_activated
+        }
+
+        return A_activated
 
     @staticmethod
     def relu_activate(x):

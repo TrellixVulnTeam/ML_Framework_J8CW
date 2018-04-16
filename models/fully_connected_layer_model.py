@@ -10,6 +10,7 @@ class FullyConnectedLayerModel:
         self.units_in = units_in
         self.units_out = units_out
         self.W, self.b = DenseNNWeightInitializerService.random_initialize_weights([self.units_in, self.units_out])
+        self.cache = {}
 
     def forward_propogate(self, A_prev):
         # get dims and use them to flatten A_prev
@@ -18,5 +19,12 @@ class FullyConnectedLayerModel:
 
         a = A_prev_reshaped.dot(self.W.T)
         a += self.b
+
+        self.cache = {
+            'A_prev': A_prev,
+            'a': a,
+            'W': self.W,
+            'b': self.b
+        }
 
         return a
