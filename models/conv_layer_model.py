@@ -1,7 +1,7 @@
 # the model object for a CONV Layer
 import numpy as np
 from models.conv_filter_model import CONVFilterModel
-from services.weight_initializer_service import WeightInitializerService
+from services.cnn_weight_initializer_service import CNNWeightInitializerService
 import helpers.image_transform as it
 
 
@@ -15,7 +15,7 @@ class CONVLayerModel:
         self.stride = stride
         self.padding = padding
         self.cache = {}
-        self.W, self.b = WeightInitializerService.random_initialize_filters([conv_filter.filter_size, conv_filter.filter_count])
+        self.W, self.b = CNNWeightInitializerService.random_initialize_filters([conv_filter.filter_size, conv_filter.channels_in, conv_filter.channels_out])
 
     def forward_propogate(self, A_prev):
         # get dims from a and weight shapes

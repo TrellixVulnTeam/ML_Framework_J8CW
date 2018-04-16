@@ -1,6 +1,5 @@
 import numpy as np
 from models.pool_filter_model import PoolFilterModel
-from services.weight_initializer_service import WeightInitializerService
 
 
 class PoolLayerModel:
@@ -12,7 +11,6 @@ class PoolLayerModel:
         self.pool_filter = pool_filter
         self.stride = stride
         self.mode = mode
-        self.weights = WeightInitializerService.random_initialize_filters([self.pool_filter.filter_size, self.pool_filter.filter_count])
         self.cache = {}
 
     def forward_propogate(self, A_prev):
