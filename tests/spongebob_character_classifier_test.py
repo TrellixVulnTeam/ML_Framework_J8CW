@@ -7,7 +7,8 @@ from models import *
 
 class SpongebobCharacterClassifierTest:
 
-    def __init__(self, training_phase: str = 'train'):
+    def __init__(self, num_classes: int, training_phase: str = 'train'):
+        self.num_classes = num_classes
         imagesets = DataPreprocessorService.load_imagesets(training_phase)
         imageset = DataPreprocessorService.merge_imagesets(imagesets)
         shuffled_imageset = DataPreprocessorService.unison_shuffle_images_labels(imageset['x'], imageset['y'])
@@ -15,35 +16,39 @@ class SpongebobCharacterClassifierTest:
 
     def run(self):
         # conv layer 1
-        conv_filter_1 = conv_filter_model.CONVFilterModel(2, 3, 10)
+        conv_filter_1 = conv_filter_model.CONVFilterModel(4, 3, 8)
         conv_layer_1 = conv_layer_model.CONVLayerModel(conv_filter_1, [2, 2], 'same')
         # relu layer 1
-        # relu_layer_1 = activation_layer_model.ActivationLayerModel('relu')
+        relu_layer_1 = activation_layer_model.ActivationLayerModel('relu')
         # pool layer 1
-        # pool_filter_1 = pool_filter_model.PoolFilterModel(2, 10)
-        # pool_layer_1 = pool_layer_model.PoolLayerModel(pool_filter_1, 2, 'max')
+        pool_filter_1 = pool_filter_model.PoolFilterModel(4, 8)
+        pool_layer_1 = pool_layer_model.PoolLayerModel(pool_filter_1, 2, 'max')
 
         # conv layer 2
-        # conv_filter_2 = conv_filter_model.CONVFilterModel(2, 10)
-        # conv_layer_2 = conv_layer_model.CONVLayerModel(conv_filter_2, [2, 2], 'same')
+        conv_filter_2 = conv_filter_model.CONVFilterModel(2, 8, 16)
+        conv_layer_2 = conv_layer_model.CONVLayerModel(conv_filter_2, [2, 2], 'same')
         # relu layer 2
-        # relu_layer_2 = activation_layer_model.ActivationLayerModel('relu')
+        relu_layer_2 = activation_layer_model.ActivationLayerModel('relu')
         # pool layer 2
-        # pool_filter_2 = pool_filter_model.PoolFilterModel(2, 10)
-        # pool_layer_2 = pool_layer_model.PoolLayerModel(pool_filter_2, 2, 'max')
+        pool_filter_2 = pool_filter_model.PoolFilterModel(2, 10)
+        pool_layer_2 = pool_layer_model.PoolLayerModel(pool_filter_2, 2, 'max')
 
         # fully connected layer
-        # fc_layer = fully_connected_layer_model.FullyConnectedLayerModel(20, 'softmax')
+        fc_layer = fully_connected_layer_model.FullyConnectedLayerModel(144, self.num_classes)
+
+        # final activation layer
+        activation_layer = activation_layer_model.ActivationLayerModel('softmax')
 
         # layers list
         layers = [
-            conv_layer_1
-            # relu_layer_1,
-            # pool_layer_1,
-            # conv_layer_2,
-            # relu_layer_2,
-            # pool_layer_2,
-            # fc_layer
+            conv_layer_1,
+            relu_layer_1,
+            pool_layer_1,
+            conv_layer_2,
+            relu_layer_2,
+            pool_layer_2,
+            fc_layer,
+            activation_layer
         ]
 
         # instantiate classifier model

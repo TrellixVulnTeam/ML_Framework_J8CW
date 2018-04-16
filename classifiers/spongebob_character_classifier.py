@@ -37,6 +37,7 @@ class SpongebobCharacterClassifier:
     def forward_propogate(self):
         A_prev = self.data.x
         for i, layer in enumerate(self.layers):
+            print(A_prev.shape)
             A_prev = layer.forward_propogate(A_prev)
             self.layers[i] = layer  # layer has been updated with cache
 

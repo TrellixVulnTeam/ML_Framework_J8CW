@@ -1,4 +1,4 @@
 __all__ = [
-    'cnn_weight_initializer_service',
+    'weight_initializer_service.py',
     'data_preprocessor_service'
 ]

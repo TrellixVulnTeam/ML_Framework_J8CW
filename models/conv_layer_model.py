@@ -1,7 +1,7 @@
 # the model object for a CONV Layer
 import numpy as np
 from models.conv_filter_model import CONVFilterModel
-from services.cnn_weight_initializer_service import CNNWeightInitializerService
+from services.weight_initializer_service import CNNWeightInitializerService
 import helpers.image_transform as it
 
 
@@ -72,7 +72,7 @@ class CONVLayerModel:
     def forward_single_step(self, a_prev_slice, W, b):
         s = np.multiply(a_prev_slice, W)
         Z = np.sum(s)
-        Z += float(b)
+        Z += float(np.sum(b))
 
         return Z
 
