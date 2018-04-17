@@ -28,13 +28,11 @@ class SpongebobCharacterClassifier:
             # forward propogate and get predictions
             Z = self.forward_propogate()
 
-            # make prediction
-            self.y_pred = PredictionHelper.predict(Z)
-
             # compute the cost and use it in the backpropogation phase
-            # cost = self.compute_cost(y_pred)
+            cost = self.compute_cost(self.y_pred)
 
             # use cost to perform backpropogations across the layers
+            self.back_propogation(cost)
 
             # update the weights
 
@@ -48,11 +46,16 @@ class SpongebobCharacterClassifier:
         return A_prev
 
     def compute_cost(self, y_prediction):
-        # todo: actual cost function
-        return np.sum(self.data.y - y_prediction)
+        m = self.data.y.shape[0]
+        cost = -(np.sum(self.data.y * np.log(y_prediction) + (1 - self.data.y) * np.log(1 - y_prediction))) / m
+        return cost
 
     def back_propogation(self, cost):
-        return 0
+        grad = cost
+        for layer in reversed(self.layers):
+            grad = layer.backwards_propogate(grad)
+
+        return grad
 
     def update_weights(self):
         return 0
