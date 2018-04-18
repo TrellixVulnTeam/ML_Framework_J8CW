@@ -76,7 +76,8 @@ class CONVLayerModel:
 
         return Z
 
-    def backward_propogate(self, dZ):
+    def backward_propogate(self, grads):
+        dZ = grads['dZ']
         # get info from cache
         A_prev = self.cache['A_prev']
         W = self.cache['W']
@@ -128,6 +129,9 @@ class CONVLayerModel:
             dA_prev[i, :, :, :] = da_prev_pad[pad:-pad, pad:-pad, :]
 
         return dA_prev, dW, db
+
+    def update_weights(self):
+        return True
 
     def compute_output_dimensions(self, n_H_prev: int, n_W_prev: int):
         pad_size = self.get_pad_size()

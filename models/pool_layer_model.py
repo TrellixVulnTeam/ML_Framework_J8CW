@@ -63,7 +63,8 @@ class PoolLayerModel:
 
         return A
 
-    def backward_propogate(self, dA):
+    def backward_propogate(self, grads):
+        dZ = grads['dZ']
         # get info from cache
         A_prev = self.cache['A_prev']
         stride = self.cache['hparameters']['stride']
@@ -71,7 +72,7 @@ class PoolLayerModel:
 
         # get dims from A_prev and dA
         m, n_H_prev, n_W_prev, n_C_prev = A_prev.shape
-        m, n_H, n_W, n_C = dA.shape
+        m, n_H, n_W, n_C = dZ.shape
 
         # define placeholder for grad for inputs
         dA_prev = np.zeros((m, n_H_prev, n_W_prev, n_C_prev))
@@ -99,10 +100,13 @@ class PoolLayerModel:
                             dA_prev[i, vert_start:vert_end, horiz_start:horiz_end, c] += np.multiply(mask, dA_prev[i, h, w, c])
 
                         elif self.mode == 'average':
-                            da = dA[i, h, w, c]
+                            da = dZ[i, h, w, c]
                             dA_prev[i, vert_start:vert_end, horiz_start:horiz_end, c] += self.create_mask_from_window(dz=da)
 
         return dA_prev
+
+    def update_weights(self):
+        return True
 
     def create_mask_from_window(self, dz=None, x=None):
         if self.mode == 'max':

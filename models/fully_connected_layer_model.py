@@ -28,3 +28,15 @@ class FullyConnectedLayerModel:
         }
 
         return a
+
+    def backward_propogate(self, grads):
+        dZ = grads['dZ']
+        dA = self.cache['a'].T.dot(dZ)
+        self.cache = {
+            'dZ': dZ,
+            'dA': dA
+        }
+        return True
+
+    def update_weights(self):
+        return True

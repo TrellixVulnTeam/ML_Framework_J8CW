@@ -23,25 +23,26 @@ class SpongebobCharacterClassifier:
     # train model using this CNN architecture: X (-> CONV -> RELU -> POOL) x 2 ... -> FC -> SOFTMAX
     def train(self):
         A_prev = np.zeros(self.data.x.shape)
-        # loop over layer objects calling their forward propogate methods
+        # loop over epochs and perform gradient descent
         for epoch in range(self.epochs):
             # forward propogate and get predictions
             Z = self.forward_propogate()
 
-            # compute the cost and use it in the backpropogation phase
+            # compute the cost and use it to track J_history
             cost = self.compute_cost(self.y_pred)
 
             # use cost to perform backpropogations across the layers
-            self.back_propogation(cost)
+            self.back_propogation()
 
             # update the weights
+            self.update_weights()
 
 
     def forward_propogate(self):
         A_prev = self.data.x
         for i, layer in enumerate(self.layers):
             A_prev = layer.forward_propogate(A_prev)
-            self.layers[i] = layer  # layer has been updated with cache
+            self.layers[i] = layer  # layer's cache has been updated with weights and inputs/outputs
 
         return A_prev
 
@@ -50,13 +51,19 @@ class SpongebobCharacterClassifier:
         cost = -(np.sum(self.data.y * np.log(y_prediction) + (1 - self.data.y) * np.log(1 - y_prediction))) / m
         return cost
 
-    def back_propogation(self, cost):
-        grad = cost
-        for layer in reversed(self.layers):
-            grad = layer.backwards_propogate(grad)
+    def back_propogation(self):
+        # get starting grad for y prediction
+        grad_y_pred = np.subtract(self.y_pred, self.data.y)
+        grads = {'dZ': grad_y_pred}
+        for i, layer in enumerate(reversed(self.layers)):
+            grads = layer.backwards_propogate(grads)
+            self.layers[i] = layer  # layer's cache has been updated with grads
 
-        return grad
+        return grads
 
     def update_weights(self):
-        return 0
+        for i, layer in enumerate(self.layers):
+            layer.update_weights()
+            self.layers[i] = layer
 
+        return True
