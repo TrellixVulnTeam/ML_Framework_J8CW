@@ -22,11 +22,10 @@ class SpongebobCharacterClassifier:
 
     # train model using this CNN architecture: X (-> CONV -> RELU -> POOL) x 2 ... -> FC -> SOFTMAX
     def train(self):
-        A_prev = np.zeros(self.data.x.shape)
         # loop over epochs and perform gradient descent
         for epoch in range(self.epochs):
             # forward propogate and get predictions
-            Z = self.forward_propogate()
+            self.y_pred = self.forward_propogate()
 
             # compute the cost and use it to track J_history
             cost = self.compute_cost(self.y_pred)
@@ -35,7 +34,7 @@ class SpongebobCharacterClassifier:
             self.back_propogation()
 
             # update the weights
-            self.update_weights()
+            # self.update_weights()
 
 
     def forward_propogate(self):
@@ -53,9 +52,11 @@ class SpongebobCharacterClassifier:
 
     def back_propogation(self):
         # get starting grad for y prediction
-        grad_y_pred = np.subtract(self.y_pred, self.data.y)
-        grads = {'dZ': grad_y_pred}
-        for i, layer in enumerate(reversed(self.layers)):
+        dZ = np.subtract(self.y_pred, self.data.y)
+        grads = {
+            'dZ': dZ
+        }
+        for i, layer in enumerate(reversed(self.layers[:-1])):  # skip output layer as it is computed above
             grads = layer.backwards_propogate(grads)
             self.layers[i] = layer  # layer's cache has been updated with grads
 

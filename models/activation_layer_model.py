@@ -7,41 +7,59 @@ class ActivationLayerModel:
     def __init__(self,
                  activation: str):
         self.activation = activation
-        self.cache = {}
+        self.forward_cache = {}
+        self.backward_cache = {}
 
     def forward_propogate(self, A_prev):
         if self.activation == 'relu':
-            A_activated = self.relu_activate(A_prev)
+            A_activated = self.relu_activation(A_prev)
         elif self.activation == 'sigmoid':
-            A_activated = self.sigmoid_activate(A_prev)
+            A_activated = self.sigmoid_activation(A_prev)
         elif self.activation == 'tanh':
-            A_activated = self.tanh_activate(A_prev)
+            A_activated = self.tanh_activation(A_prev)
         elif self.activation == 'softmax':
             A_activated = self.softmax_activation(A_prev)
         else:
             A_activated = A_prev
 
-        self.cache = {
+        self.forward_cache = {
             'A_prev': A_prev,
             'A': A_activated
         }
 
         return A_activated
 
+    def backward_propogate(self, grads):
+        dZ = grads['dZ']
+        dZ = dZ * self.get_derivative(self.activation, self.forward_cache['A'])
+        return dZ
+
+    def update_params(self):
+        return self  # activation layers have no params to update
+
     @staticmethod
-    def relu_activate(x):
+    def relu_activation(x):
         return np.maximum(x, 0)
 
     @staticmethod
-    def sigmoid_activate(x):
+    def sigmoid_activation(x):
         return 1 / (1 + np.exp(-x))
 
     @staticmethod
-    def tanh_activate(x):
+    def tanh_activation(x):
         return np.tanh(x)
 
     @staticmethod
     def softmax_activation(x):
-        e_x = np.exp(x - np.max(x))
+        e_x = np.exp(x - np.max(x, axis=-1, keepdims=True))
+        return e_x / np.sum(e_x, axis=-1, keepdims=True)
 
-        return e_x / e_x.sum()
+    @staticmethod
+    def get_derivative(activation_function, x):
+        if activation_function == 'softmax':
+            return self.softmax_derivative(x)
+
+    @staticmethod
+    def softmax_derivative(x):
+        s = x.reshape(-1, 1)
+        return np.diagflat(s) - np.dot(s, s.T)

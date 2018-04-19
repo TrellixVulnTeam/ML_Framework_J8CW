@@ -34,7 +34,7 @@ class SpongebobCharacterClassifierTest:
         pool_layer_2 = pool_layer_model.PoolLayerModel(pool_filter_2, 2, 'max')
 
         # fully connected layer
-        fc_layer = fully_connected_layer_model.FullyConnectedLayerModel(144, self.num_classes)
+        fc_layer = fully_connected_layer_model.FullyConnectedLayerModel(144, self.num_classes, len(self.data_model.y))
 
         # final activation layer
         activation_layer = activation_layer_model.ActivationLayerModel('softmax')
