@@ -2,6 +2,7 @@ import numpy as np
 from services.weight_initializer_service import DenseNNWeightInitializerService
 from models.activation_layer_model import ActivationLayerModel
 
+
 class FullyConnectedLayerModel:
 
     def __init__(self,
@@ -18,7 +19,7 @@ class FullyConnectedLayerModel:
     def forward_propogate(self, A_prev):
         # get dims and use them to flatten A_prev
         m, n_H, n_W, n_C = A_prev.shape
-        A_prev_reshaped = A_prev.reshape(m, n_H * n_W * n_C)
+        A_prev_reshaped = A_prev.reshape(m, n_H * n_W * n_C) if len(A_prev.shape) > 2 else A_prev
 
         a = A_prev_reshaped.dot(self.W.T)
         a += self.b
@@ -38,7 +39,7 @@ class FullyConnectedLayerModel:
         db = np.sum(dZ, axis=1, keepdims=True) / self.m
 
         # update dZ for previous layer output
-        dZ = self.W.T.dot(dZ)
+        dZ = self.W.T.dot(dZ.T)
 
         self.backward_cache = {
             'dZ': dZ,
@@ -46,7 +47,9 @@ class FullyConnectedLayerModel:
             'db': db
         }
 
-        return dZ
+        return {
+            'dZ': dZ
+        }
 
     def update_weights(self):
         return True

@@ -14,7 +14,8 @@ class CONVLayerModel:
         self.conv_filter = conv_filter
         self.stride = stride
         self.padding = padding
-        self.cache = {}
+        self.forward_cache = {}
+        self.backward_cache = {}
         self.W, self.b = CNNWeightInitializerService.random_initialize_filters([conv_filter.filter_size, conv_filter.channels_in, conv_filter.channels_out])
 
     def forward_propogate(self, A_prev):
@@ -56,7 +57,7 @@ class CONVLayerModel:
                         Z[i, h, w, c] = self.forward_single_step(a_slice_prev, self.W[:, :, :, c], self.b)
 
         # store info in "cache" to use in backprop
-        self.cache = {
+        self.forward_cache = {
             'A_prev': A_prev,
             'W': self.W,
             'b': self.b,
@@ -79,11 +80,11 @@ class CONVLayerModel:
     def backward_propogate(self, grads):
         dZ = grads['dZ']
         # get info from cache
-        A_prev = self.cache['A_prev']
-        W = self.cache['W']
-        b = self.cache['b']
-        stride = self.cache['hparameters']['stride']
-        pad = self.cache['hparameters']['pad']
+        A_prev = self.forward_cache['A_prev']
+        W = self.forward_cache['W']
+        b = self.forward_cache['b']
+        stride = self.forward_cache['hparameters']['stride']
+        pad = self.forward_cache['hparameters']['pad']
 
         # get A_prev and W dimensions
         m, n_H_prev, n_W_prev, n_C_prev = A_prev.shape
@@ -126,9 +127,17 @@ class CONVLayerModel:
                         dW[:, :, :, c] += a_slice * dZ[i, h, w, c]
                         db[:, :, :, c] += dZ[i, h, w, c]
 
-            dA_prev[i, :, :, :] = da_prev_pad[pad:-pad, pad:-pad, :]
+            dA_prev[i, :, :, :] = da_prev_pad
 
-        return dA_prev, dW, db
+        self.backward_cache = {
+            'dA_prev': dA_prev,
+            'dW': dW,
+            'db': db
+        }
+
+        return {
+            'dZ': dA_prev
+        }
 
     def update_weights(self):
         return True

@@ -11,7 +11,8 @@ class PoolLayerModel:
         self.pool_filter = pool_filter
         self.stride = stride
         self.mode = mode
-        self.cache = {}
+        self.forward_cache = {}
+        self.backward_cache = {}
 
     def forward_propogate(self, A_prev):
         # get dims of previous input
@@ -53,8 +54,9 @@ class PoolLayerModel:
                         elif self.mode == 'average':
                             A[i, h, w, c] = a_prev_slice.mean()
 
-        self.cache = {
+        self.forward_cache = {
             'A_prev': A_prev,
+            'A': A,
             'hparameters': {
                 'filter_size': f,
                 'stride': stride
@@ -66,13 +68,17 @@ class PoolLayerModel:
     def backward_propogate(self, grads):
         dZ = grads['dZ']
         # get info from cache
-        A_prev = self.cache['A_prev']
-        stride = self.cache['hparameters']['stride']
-        f = self.cache['hparameters']['filter_size']
+        A_prev = self.forward_cache['A_prev']
+        A = self.forward_cache['A']
+        stride = self.forward_cache['hparameters']['stride']
+        f = self.forward_cache['hparameters']['filter_size']
 
         # get dims from A_prev and dA
         m, n_H_prev, n_W_prev, n_C_prev = A_prev.shape
-        m, n_H, n_W, n_C = dZ.shape
+        m, n_H, n_W, n_C = A.shape
+
+        # resize dZ if needed
+        dZ = dZ.T.reshape(m, n_H, n_W, n_C)
 
         # define placeholder for grad for inputs
         dA_prev = np.zeros((m, n_H_prev, n_W_prev, n_C_prev))
@@ -103,7 +109,13 @@ class PoolLayerModel:
                             da = dZ[i, h, w, c]
                             dA_prev[i, vert_start:vert_end, horiz_start:horiz_end, c] += self.create_mask_from_window(dz=da)
 
-        return dA_prev
+        self.backward_cache = {
+            'dA_prev': dA_prev
+        }
+
+        return {
+            'dZ': dA_prev
+        }
 
     def update_weights(self):
         return True

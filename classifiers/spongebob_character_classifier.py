@@ -31,7 +31,7 @@ class SpongebobCharacterClassifier:
             cost = self.compute_cost(self.y_pred)
 
             # use cost to perform backpropogations across the layers
-            self.back_propogation()
+            self.backward_propogate()
 
             # update the weights
             # self.update_weights()
@@ -50,14 +50,16 @@ class SpongebobCharacterClassifier:
         cost = -(np.sum(self.data.y * np.log(y_prediction) + (1 - self.data.y) * np.log(1 - y_prediction))) / m
         return cost
 
-    def back_propogation(self):
+    def backward_propogate(self):
         # get starting grad for y prediction
         dZ = np.subtract(self.y_pred, self.data.y)
+
         grads = {
             'dZ': dZ
         }
+
         for i, layer in enumerate(reversed(self.layers[:-1])):  # skip output layer as it is computed above
-            grads = layer.backwards_propogate(grads)
+            grads = layer.backward_propogate(grads)
             self.layers[i] = layer  # layer's cache has been updated with grads
 
         return grads

@@ -32,7 +32,14 @@ class ActivationLayerModel:
     def backward_propogate(self, grads):
         dZ = grads['dZ']
         dZ = dZ * self.get_derivative(self.activation, self.forward_cache['A'])
-        return dZ
+
+        self.backward_cache = {
+            'dZ': dZ
+        }
+
+        return {
+            'dZ': dZ
+        }
 
     def update_params(self):
         return self  # activation layers have no params to update
@@ -54,12 +61,19 @@ class ActivationLayerModel:
         e_x = np.exp(x - np.max(x, axis=-1, keepdims=True))
         return e_x / np.sum(e_x, axis=-1, keepdims=True)
 
-    @staticmethod
-    def get_derivative(activation_function, x):
+    def get_derivative(self, activation_function, x):
         if activation_function == 'softmax':
             return self.softmax_derivative(x)
+        elif activation_function == 'relu':
+            return self.relu_derivative(x)
 
     @staticmethod
     def softmax_derivative(x):
         s = x.reshape(-1, 1)
         return np.diagflat(s) - np.dot(s, s.T)
+
+    @staticmethod
+    def relu_derivative(x):
+        x[x <= 0] = 0
+        x[x > 0] = 1
+        return x
