@@ -10,10 +10,12 @@ class CONVLayerModel:
     def __init__(self,
                  conv_filter: CONVFilterModel,
                  stride: list,
-                 padding: str):
+                 padding: str,
+                 alpha: float = 1.0):
         self.conv_filter = conv_filter
         self.stride = stride
         self.padding = padding
+        self.alpha = alpha
         self.forward_cache = {}
         self.backward_cache = {}
         self.W, self.b = CNNWeightInitializerService.random_initialize_filters([conv_filter.filter_size, conv_filter.channels_in, conv_filter.channels_out])
@@ -140,7 +142,9 @@ class CONVLayerModel:
         }
 
     def update_weights(self):
-        return True
+        self.W -= self.alpha * self.backward_cache['dW']
+        self.b -= self.alpha * self.backward_cache['db']
+        return self
 
     def compute_output_dimensions(self, n_H_prev: int, n_W_prev: int):
         pad_size = self.get_pad_size()

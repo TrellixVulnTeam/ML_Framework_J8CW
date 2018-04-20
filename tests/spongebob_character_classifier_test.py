@@ -52,7 +52,7 @@ class SpongebobCharacterClassifierTest:
         ]
 
         # instantiate classifier model
-        classifier_model = SpongebobCharacterClassifier(self.data_model, 1, layers)
+        classifier_model = SpongebobCharacterClassifier(self.data_model, 500, layers)
 
         # train model
         classifier_model.train()

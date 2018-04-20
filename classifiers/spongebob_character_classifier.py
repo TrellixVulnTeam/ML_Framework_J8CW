@@ -18,6 +18,7 @@ class SpongebobCharacterClassifier:
         self.epochs = epochs
         self.layers = layers
         self.prediction = None
+        self.cost_history = []
         self.y_pred = []
 
     # train model using this CNN architecture: X (-> CONV -> RELU -> POOL) x 2 ... -> FC -> SOFTMAX
@@ -29,19 +30,19 @@ class SpongebobCharacterClassifier:
 
             # compute the cost and use it to track J_history
             cost = self.compute_cost(self.y_pred)
+            print(cost)
+            self.cost_history.append(cost)
 
             # use cost to perform backpropogations across the layers
             self.backward_propogate()
 
             # update the weights
-            # self.update_weights()
-
+            self.update_weights()
 
     def forward_propogate(self):
         A_prev = self.data.x
         for i, layer in enumerate(self.layers):
             A_prev = layer.forward_propogate(A_prev)
-            self.layers[i] = layer  # layer's cache has been updated with weights and inputs/outputs
 
         return A_prev
 
@@ -58,15 +59,16 @@ class SpongebobCharacterClassifier:
             'dZ': dZ
         }
 
+        # add grads to skipped layer
+        self.layers[len(self.layers) - 1].backward_cache = grads
+
         for i, layer in enumerate(reversed(self.layers[:-1])):  # skip output layer as it is computed above
             grads = layer.backward_propogate(grads)
-            self.layers[i] = layer  # layer's cache has been updated with grads
 
         return grads
 
     def update_weights(self):
         for i, layer in enumerate(self.layers):
             layer.update_weights()
-            self.layers[i] = layer
 
         return True

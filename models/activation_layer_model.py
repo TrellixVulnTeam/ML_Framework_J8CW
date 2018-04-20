@@ -41,8 +41,8 @@ class ActivationLayerModel:
             'dZ': dZ
         }
 
-    def update_params(self):
-        return self  # activation layers have no params to update
+    def update_weights(self):
+        return self  # activation layers have no weights to update
 
     @staticmethod
     def relu_activation(x):

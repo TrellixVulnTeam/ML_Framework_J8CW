@@ -103,7 +103,7 @@ class PoolLayerModel:
                         if self.mode == 'max':
                             a_prev_slice = a_prev[vert_start:vert_end, horiz_start:horiz_end, c]
                             mask = self.create_mask_from_window(x=a_prev_slice)
-                            dA_prev[i, vert_start:vert_end, horiz_start:horiz_end, c] += np.multiply(mask, dA_prev[i, h, w, c])
+                            dA_prev[i, vert_start:vert_end, horiz_start:horiz_end, c] += np.multiply(mask, dZ[i, h, w, c])
 
                         elif self.mode == 'average':
                             da = dZ[i, h, w, c]
@@ -118,7 +118,7 @@ class PoolLayerModel:
         }
 
     def update_weights(self):
-        return True
+        return self  # pool layer has no weights to update
 
     def create_mask_from_window(self, dz=None, x=None):
         if self.mode == 'max':
