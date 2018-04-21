@@ -21,7 +21,7 @@ class SpongebobCharacterClassifier:
         self.cost_history = []
         self.y_pred = []
 
-    # train model using this CNN architecture: X (-> CONV -> RELU -> POOL) x 2 ... -> FC -> SOFTMAX
+    # train model using this CNN architecture: X -> CONV -> POOL -> FC -> SOFTMAX
     def train(self):
         # loop over epochs and perform gradient descent
         for epoch in range(self.epochs):
@@ -48,7 +48,7 @@ class SpongebobCharacterClassifier:
 
     def compute_cost(self, y_prediction):
         m = self.data.y.shape[0]
-        cost = -(np.sum(self.data.y * np.log(y_prediction) + (1 - self.data.y) * np.log(1 - y_prediction))) / m
+        cost = -(np.sum(self.data.y * np.log(y_prediction + 0.001) + (1 - self.data.y) * np.log(1 - y_prediction + 0.001))) / m  # added + 0.001 to avoid log of zeros
         return cost
 
     def backward_propogate(self):
