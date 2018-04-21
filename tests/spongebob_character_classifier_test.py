@@ -12,7 +12,7 @@ class SpongebobCharacterClassifierTest:
         imagesets = DataPreprocessorService.load_imagesets(training_phase)
         imageset = DataPreprocessorService.merge_imagesets(imagesets)
         shuffled_imageset = DataPreprocessorService.unison_shuffle_images_labels(imageset['x'], imageset['y'])
-        self.data_model = data_model.DataModel(shuffled_imageset, max(imageset['y']) + 1, 2, [64, 64])
+        self.data_model = data_model.DataModel(shuffled_imageset, max(imageset['y']) + 1, [64, 64])
 
     def run(self):
         # conv layer 1

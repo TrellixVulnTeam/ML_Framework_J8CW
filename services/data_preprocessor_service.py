@@ -47,7 +47,7 @@ class DataPreprocessorService:
         }
 
     @staticmethod
-    def preprocess_imageset(imageset, image_size: list, pad):
+    def preprocess_imageset(imageset, image_size: list):
         processed_imageset = np.zeros((len(imageset), image_size[0], image_size[1], imageset[0].shape[2]))
         for i, image in enumerate(imageset):
             image = image[:, :, 0:3]
