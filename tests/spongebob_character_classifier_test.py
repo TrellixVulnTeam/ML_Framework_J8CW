@@ -17,14 +17,14 @@ class SpongebobCharacterClassifierTest:
     def run(self):
         # conv layer 1
         conv_filter_1 = conv_filter_model.CONVFilterModel(4, 3, 8)
-        conv_layer_1 = conv_layer_model.CONVLayerModel(conv_filter_1, [2, 2], 'same', 0.001)
+        conv_layer_1 = conv_layer_model.CONVLayerModel(conv_filter_1, [2, 2], 'same', 'conv1', 0.001)
 
         # pool layer 1
         pool_filter_1 = pool_filter_model.PoolFilterModel(4, 8)
         pool_layer_1 = pool_layer_model.PoolLayerModel(pool_filter_1, 2, 'max')
 
         # fully connected layer
-        fc_layer = fully_connected_layer_model.FullyConnectedLayerModel(1568, self.num_classes, len(self.data_model.y), 0.001)
+        fc_layer = fully_connected_layer_model.FullyConnectedLayerModel(1568, self.num_classes, len(self.data_model.y), 'fc1', 0.001)
 
         # final activation layer
         activation_layer = activation_layer_model.ActivationLayerModel('softmax')

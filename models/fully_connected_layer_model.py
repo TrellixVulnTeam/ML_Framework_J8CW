@@ -1,6 +1,5 @@
 import numpy as np
 from services.weight_initializer_service import DenseNNWeightInitializerService
-from models.activation_layer_model import ActivationLayerModel
 
 
 class FullyConnectedLayerModel:
@@ -9,14 +8,26 @@ class FullyConnectedLayerModel:
                  units_in: int,
                  units_out: int,
                  m: int,
+                 name: str,
                  alpha: float = 1.0):
         self.units_in = units_in
         self.units_out = units_out
         self.m = m
+        self.name = name
         self.alpha = alpha
-        self.W, self.b = DenseNNWeightInitializerService.random_initialize_weights([self.units_in, self.units_out])
         self.forward_cache = {}
         self.backward_cache = {}
+        self.__load_weights()
+
+    def __load_weights(self):
+        weights = {
+            'W': np.loadtxt('stored/' + self.name + '_W'),
+            'b': np.loadtxt('stored/' + self.name + '_b')
+        }
+        if weights['W'] and weights['b']:
+            self.W, self.b = weights['W'], weights['b']
+        else:
+            self.W, self.b = DenseNNWeightInitializerService.random_initialize_weights([self.units_in, self.units_out])
 
     def forward_propogate(self, A_prev):
         # get dims and use them to flatten A_prev
@@ -58,4 +69,12 @@ class FullyConnectedLayerModel:
     def update_weights(self):
         self.W -= self.alpha * self.backward_cache['dW']
         self.b -= self.alpha * self.backward_cache['db']
+        return self
+
+    def store_weights(self):
+        fW = self.W.flatten()
+        fb = self.b.flatten()
+        np.savetxt(self.name + '_W', fW)
+        np.savetxt(self.name + '_b', fb)
+
         return self

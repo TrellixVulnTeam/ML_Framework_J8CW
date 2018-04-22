@@ -40,9 +40,12 @@ class SpongebobCharacterClassifier:
             # update the weights
             self.update_weights()
 
+            # save the weights
+            self.save_weights()
+
     def forward_propogate(self):
         A_prev = self.data.x
-        for i, layer in enumerate(self.layers):
+        for layer in self.layers:
             A_prev = layer.forward_propogate(A_prev)
 
         return A_prev
@@ -63,13 +66,17 @@ class SpongebobCharacterClassifier:
         # add grads to skipped layer
         self.layers[len(self.layers) - 1].backward_cache = grads
 
-        for i, layer in enumerate(reversed(self.layers[:-1])):  # skip output layer as it is computed above
+        for layer in reversed(self.layers[:-1]):  # skip output layer as it is computed above
             grads = layer.backward_propogate(grads)
 
         return grads
 
     def update_weights(self):
-        for i, layer in enumerate(self.layers):
+        for layer in self.layers:
             layer.update_weights()
 
         return True
+
+    def save_weights(self):
+        for layer in self.layers:
+            layer.save_weights('stored/spongebob_character_classifiers/')

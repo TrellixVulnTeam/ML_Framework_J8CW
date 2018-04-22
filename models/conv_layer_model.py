@@ -7,10 +7,13 @@ import helpers.image_transform as it
 
 class CONVLayerModel:
 
+    weights: {}
+
     def __init__(self,
                  conv_filter: CONVFilterModel,
                  stride: list,
                  padding: str,
+                 name: str,
                  alpha: float = 1.0):
         self.conv_filter = conv_filter
         self.stride = stride
@@ -18,7 +21,18 @@ class CONVLayerModel:
         self.alpha = alpha
         self.forward_cache = {}
         self.backward_cache = {}
-        self.W, self.b = CNNWeightInitializerService.random_initialize_filters([conv_filter.filter_size, conv_filter.channels_in, conv_filter.channels_out])
+        self.name = name
+        self.__load_weights()
+
+    def __load_weights(self):
+        weights = {
+            'W': np.loadtxt('stored/' + self.name + '_W'),
+            'b': np.loadtxt('stored/' + self.name + '_b')
+        }
+        if weights['W'] and weights['b']:
+            self.W, self.b = weights['W'], weights['b']
+        else:
+            CNNWeightInitializerService.random_initialize_filters([self.conv_filter.filter_size, self.conv_filter.channels_in, self.conv_filter.channels_out])
 
     def forward_propogate(self, A_prev):
         # get dims from a and weight shapes
@@ -144,6 +158,14 @@ class CONVLayerModel:
     def update_weights(self):
         self.W -= self.alpha * self.backward_cache['dW']
         self.b -= self.alpha * self.backward_cache['db']
+        return self
+
+    def store_weights(self, directory):
+        fW = self.W.flatten()
+        fb = self.b.flatten()
+        np.savetxt(self.name + '_W', fW)
+        np.savetxt(self.name + '_b', fb)
+
         return self
 
     def compute_output_dimensions(self, n_H_prev: int, n_W_prev: int):

@@ -7,10 +7,12 @@ class PoolLayerModel:
     def __init__(self,
                  pool_filter: PoolFilterModel,
                  stride: int,
+                 name: str,
                  mode='max'):
         self.pool_filter = pool_filter
         self.stride = stride
         self.mode = mode
+        self.name = name
         self.forward_cache = {}
         self.backward_cache = {}
 
@@ -119,6 +121,9 @@ class PoolLayerModel:
 
     def update_weights(self):
         return self  # pool layer has no weights to update
+
+    def store_weights(self, directory=''):
+        return self  # no weights to save
 
     def create_mask_from_window(self, dz=None, x=None):
         if self.mode == 'max':

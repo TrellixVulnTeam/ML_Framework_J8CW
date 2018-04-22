@@ -5,10 +5,12 @@ import numpy as np
 class ActivationLayerModel:
 
     def __init__(self,
-                 activation: str):
+                 activation: str,
+                 name: str):
         self.activation = activation
         self.forward_cache = {}
         self.backward_cache = {}
+        self.name = name
 
     def forward_propogate(self, A_prev):
         if self.activation == 'relu':
@@ -43,6 +45,9 @@ class ActivationLayerModel:
 
     def update_weights(self):
         return self  # activation layers have no weights to update
+
+    def store_weights(self, directory=''):
+        return self  # no weights to save
 
     @staticmethod
     def relu_activation(x):
