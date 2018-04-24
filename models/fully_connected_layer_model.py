@@ -1,5 +1,6 @@
 import numpy as np
 from services.weight_initializer_service import DenseNNWeightInitializerService
+from pathlib import Path
 
 
 class FullyConnectedLayerModel:
@@ -20,14 +21,16 @@ class FullyConnectedLayerModel:
         self.__load_weights()
 
     def __load_weights(self):
-        weights = {
-            'W': np.loadtxt('stored/' + self.name + '_W'),
-            'b': np.loadtxt('stored/' + self.name + '_b')
-        }
-        if weights['W'] and weights['b']:
-            self.W, self.b = weights['W'], weights['b']
+        if Path('stored/' + self.name + '_W').is_file() and Path('stored/' + self.name + '_b').is_file():
+            W, b = np.loadtxt('stored/' + self.name + '_W'), np.loadtxt('stored/' + self.name + '_b')
+            W = W.reshape(self.units_out, self.units_in)
+            b = b.reshape(1, self.units_out)
         else:
-            self.W, self.b = DenseNNWeightInitializerService.random_initialize_weights([self.units_in, self.units_out])
+            W, b = DenseNNWeightInitializerService.random_initialize_weights([self.units_in, self.units_out])
+            W = W.reshape(self.units_out, self.units_in)
+            b = b.reshape(1, self.units_out)
+
+        self.W, self.b = W, b
 
     def forward_propogate(self, A_prev):
         # get dims and use them to flatten A_prev
@@ -48,9 +51,11 @@ class FullyConnectedLayerModel:
 
     def backward_propogate(self, grads):
         dZ = grads['dZ']
-        m, n_H, n_W, n_C = self.forward_cache['A_prev'].shape
-        A_prev_reshaped = self.forward_cache['A_prev'].reshape(m, n_H * n_W * n_C) if len(self.forward_cache['A_prev'].shape) > 2 else self.forward_cache['A_prev']
-        dW = (A_prev_reshaped.T.dot(dZ)).T / self.m
+        A_prev = self.forward_cache['A_prev']
+        if len(A_prev.shape) > 2:
+            m, n_H, n_W, n_C = self.forward_cache['A_prev'].shape
+            A_prev = self.forward_cache['A_prev'].reshape(m, n_H * n_W * n_C)
+        dW = (A_prev.T.dot(dZ)).T / self.m
         db = np.sum(dZ) / self.m
 
         # update dZ for previous layer output
@@ -74,7 +79,7 @@ class FullyConnectedLayerModel:
     def store_weights(self):
         fW = self.W.flatten()
         fb = self.b.flatten()
-        np.savetxt(self.name + '_W', fW)
-        np.savetxt(self.name + '_b', fb)
+        np.savetxt('stored/' + self.name + '_W', fW)
+        np.savetxt('stored/' + self.name + '_b', fb)
 
         return self

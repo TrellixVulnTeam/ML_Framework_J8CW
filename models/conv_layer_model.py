@@ -3,6 +3,7 @@ import numpy as np
 from models.conv_filter_model import CONVFilterModel
 from services.weight_initializer_service import CNNWeightInitializerService
 import helpers.image_transform as it
+from pathlib import Path
 
 
 class CONVLayerModel:
@@ -25,14 +26,14 @@ class CONVLayerModel:
         self.__load_weights()
 
     def __load_weights(self):
-        weights = {
-            'W': np.loadtxt('stored/' + self.name + '_W'),
-            'b': np.loadtxt('stored/' + self.name + '_b')
-        }
-        if weights['W'] and weights['b']:
-            self.W, self.b = weights['W'], weights['b']
+        if Path('stored/' + self.name + '_W').is_file() and Path('stored/' + self.name + '_b').is_file():
+            W, b = np.loadtxt('stored/' + self.name + '_W'), np.loadtxt('stored/' + self.name + '_b')
+            W = W.reshape(self.conv_filter.filter_size, self.conv_filter.filter_size, self.conv_filter.channels_in, self.conv_filter.channels_out)
+            b = b.reshape(1, 1, 1, self.conv_filter.channels_out)
         else:
-            CNNWeightInitializerService.random_initialize_filters([self.conv_filter.filter_size, self.conv_filter.channels_in, self.conv_filter.channels_out])
+            W, b = CNNWeightInitializerService.random_initialize_filters([self.conv_filter.filter_size, self.conv_filter.channels_in, self.conv_filter.channels_out])
+
+        self.W, self.b = W, b
 
     def forward_propogate(self, A_prev):
         # get dims from a and weight shapes
@@ -160,11 +161,11 @@ class CONVLayerModel:
         self.b -= self.alpha * self.backward_cache['db']
         return self
 
-    def store_weights(self, directory):
+    def store_weights(self):
         fW = self.W.flatten()
         fb = self.b.flatten()
-        np.savetxt(self.name + '_W', fW)
-        np.savetxt(self.name + '_b', fb)
+        np.savetxt('stored/' + self.name + '_W', fW)
+        np.savetxt('stored/' + self.name + '_b', fb)
 
         return self
 

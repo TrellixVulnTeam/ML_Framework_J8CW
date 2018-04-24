@@ -41,7 +41,7 @@ class SpongebobCharacterClassifier:
             self.update_weights()
 
             # save the weights
-            self.save_weights()
+            self.store_weights()
 
     def forward_propogate(self):
         A_prev = self.data.x
@@ -77,6 +77,6 @@ class SpongebobCharacterClassifier:
 
         return True
 
-    def save_weights(self):
+    def store_weights(self):
         for layer in self.layers:
-            layer.save_weights('stored/spongebob_character_classifiers/')
+            layer.store_weights() if hasattr(layer, 'W') and hasattr(layer, 'b') else None

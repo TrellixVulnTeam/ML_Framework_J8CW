@@ -27,7 +27,7 @@ class SpongebobCharacterClassifierTest:
         fc_layer = fully_connected_layer_model.FullyConnectedLayerModel(1568, self.num_classes, len(self.data_model.y), 'fc1', 0.001)
 
         # final activation layer
-        activation_layer = activation_layer_model.ActivationLayerModel('softmax')
+        activation_layer = activation_layer_model.ActivationLayerModel('softmax', 'output_activation')
 
         # layers list
         layers = [
