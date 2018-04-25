@@ -33,7 +33,7 @@ class ActivationLayerModel:
 
     def backward_propogate(self, grads):
         dZ = grads['dZ']
-        dZ = dZ * self.get_derivative(self.activation, self.forward_cache['A'])
+        dZ = dZ.T * self.get_derivative(self.activation, self.forward_cache['A'])
 
         self.backward_cache = {
             'dZ': dZ

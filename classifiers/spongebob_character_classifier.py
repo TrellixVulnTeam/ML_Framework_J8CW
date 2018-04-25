@@ -1,8 +1,7 @@
 # the CNN model to classify spongebob characters
 import numpy as np
 from models.data_model import DataModel
-from services.data_preprocessor_service import DataPreprocessorService as dps
-from helpers.prediction_helper import PredictionHelper
+import matplotlib.pyplot as plt
 
 
 class SpongebobCharacterClassifier:
@@ -23,6 +22,7 @@ class SpongebobCharacterClassifier:
 
     # train model using this CNN architecture: X -> CONV -> POOL -> FC -> SOFTMAX
     def train(self):
+        # self.display_data()
         # loop over epochs and perform gradient descent
         for epoch in range(self.epochs):
             print('Epoch: ' + str(epoch))
@@ -118,3 +118,9 @@ class SpongebobCharacterClassifier:
             layer.W = W_flat.reshape(shape)
 
         return layer
+
+    def display_data(self):
+        for i, image in enumerate(self.data.x):
+            plt.imshow(image)
+            plt.title(np.argmax(self.data.y[i]))
+            plt.show()
