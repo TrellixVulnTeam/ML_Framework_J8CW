@@ -46,7 +46,7 @@ class ActivationLayerModel:
     def update_weights(self):
         return self  # activation layers have no weights to update
 
-    def store_weights(self, directory=''):
+    def store_weights(self):
         return self  # no weights to save
 
     @staticmethod

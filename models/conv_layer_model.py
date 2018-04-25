@@ -22,6 +22,15 @@ class CONVLayerModel:
         self.alpha = alpha
         self.forward_cache = {}
         self.backward_cache = {}
+        self.update_params = {
+            'sdW': 0,
+            'sdb': 0,
+            'vdW': 0,
+            'vdb': 0,
+            'beta_one': 0.9,
+            'beta_two': 0.999,
+            'epsilon': 10e-8
+        }
         self.name = name
         self.__load_weights()
 
@@ -156,9 +165,14 @@ class CONVLayerModel:
             'dZ': dA_prev
         }
 
-    def update_weights(self):
-        self.W -= self.alpha * self.backward_cache['dW']
-        self.b -= self.alpha * self.backward_cache['db']
+    def update_weights(self, iteration: int):
+        # updat_param_W, update_param_b = self.backward_cache['dW'], self.backward_cache['db']
+        updat_param_W, update_param_b = self.compute_momentum_params(iteration)
+
+        self.W -= self.alpha * updat_param_W
+        self.b -= self.alpha * update_param_b
+
+        # self.store_weights()
         return self
 
     def store_weights(self):
@@ -187,3 +201,18 @@ class CONVLayerModel:
 
     def get_filter_size(self):
         return self.conv_filter.filter_size
+
+    def compute_momentum_params(self, iteration: int):
+        # compute momentum gradients
+        vdW = self.update_params['beta_one'] * self.update_params['vdW'] + (1 - self.update_params['beta_one']) * self.backward_cache['dW']
+        vdb = self.update_params['beta_one'] * self.update_params['vdb'] + (1 - self.update_params['beta_one']) * self.backward_cache['db']
+
+        # set as corrected grads
+        self.update_params['vdW'] = vdW / (1 - np.power(self.update_params['beta_one'], iteration))
+        self.update_params['vdb'] = vdb / (1 - np.power(self.update_params['beta_one'], iteration))
+
+        # use adam to update weights
+        update_param_W = self.update_params['vdW']
+        update_param_b = self.update_params['vdb']
+
+        return update_param_W, update_param_b
