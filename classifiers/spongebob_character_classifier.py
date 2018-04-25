@@ -22,7 +22,6 @@ class SpongebobCharacterClassifier:
 
     # train model using this CNN architecture: X -> CONV -> POOL -> FC -> SOFTMAX
     def train(self):
-        # self.display_data()
         # loop over epochs and perform gradient descent
         for epoch in range(self.epochs):
             print('Epoch: ' + str(epoch))
@@ -42,8 +41,8 @@ class SpongebobCharacterClassifier:
             # update the weights
             self.update_weights(epoch + 1)  # plus 1 to avoid divide by zero
 
-            # save the weights
-            self.store_weights()
+        # save the weights
+        self.store_weights()
 
     def forward_propogate(self, A_prev):
         for layer in self.layers:
@@ -74,14 +73,15 @@ class SpongebobCharacterClassifier:
 
     def update_weights(self, iteration: int):
         for layer in self.layers:
-            layer.update_weights(iteration) if hasattr(layer, 'W') and hasattr(layer, 'b') else None
+            if hasattr(layer, 'W') and hasattr(layer, 'b'):
+                layer.update_weights(iteration)
 
         return True
 
     def store_weights(self):
         for layer in self.layers:
-            # layer.store_weights() if hasattr(layer, 'W') and hasattr(layer, 'b') else None
-            return False
+            if hasattr(layer, 'W') and hasattr(layer, 'b'):
+                layer.store_weights()
 
     def gradient_check(self, layer):
         # get grads from layer

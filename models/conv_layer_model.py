@@ -35,12 +35,7 @@ class CONVLayerModel:
         self.__load_weights()
 
     def __load_weights(self):
-        if Path('stored/' + self.name + '_W').is_file() and Path('stored/' + self.name + '_b').is_file():
-            W, b = np.loadtxt('stored/' + self.name + '_W'), np.loadtxt('stored/' + self.name + '_b')
-            W = W.reshape(self.conv_filter.filter_size, self.conv_filter.filter_size, self.conv_filter.channels_in, self.conv_filter.channels_out)
-            b = b.reshape(1, 1, 1, self.conv_filter.channels_out)
-        else:
-            W, b = CNNWeightInitializerService.random_initialize_filters([self.conv_filter.filter_size, self.conv_filter.channels_in, self.conv_filter.channels_out])
+        W, b = CNNWeightInitializerService.random_initialize_filters([self.conv_filter.filter_size, self.conv_filter.channels_in, self.conv_filter.channels_out])
 
         self.W, self.b = W, b
 

@@ -30,14 +30,9 @@ class FullyConnectedLayerModel:
         self.__load_weights()
 
     def __load_weights(self):
-        if Path('stored/' + self.name + '_W').is_file() and Path('stored/' + self.name + '_b').is_file():
-            W, b = np.loadtxt('stored/' + self.name + '_W'), np.loadtxt('stored/' + self.name + '_b')
-            W = W.reshape(self.units_out, self.units_in)
-            b = b.reshape(1, self.units_out)
-        else:
-            W, b = DenseNNWeightInitializerService.random_initialize_weights([self.units_in, self.units_out])
-            W = W.reshape(self.units_out, self.units_in)
-            b = b.reshape(1, self.units_out)
+        W, b = DenseNNWeightInitializerService.random_initialize_weights([self.units_in, self.units_out])
+        W = W.reshape(self.units_out, self.units_in)
+        b = b.reshape(1, self.units_out)
 
         self.W, self.b = W, b
 
@@ -87,6 +82,7 @@ class FullyConnectedLayerModel:
 
         self.W -= self.alpha * update_param_W
         self.b -= self.alpha * update_param_b
+
         return self
 
     def store_weights(self):
