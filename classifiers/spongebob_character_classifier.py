@@ -39,10 +39,7 @@ class SpongebobCharacterClassifier:
             # self.gradient_check(self.layers[0])
 
             # update the weights
-            self.update_weights(epoch + 1)  # plus 1 to avoid divide by zero
-
-        # save the weights
-        self.store_weights()
+            self.update_weights(epoch + 1)  # plus 1 to avoid divide by zero in momentum
 
     def forward_propogate(self, A_prev):
         for layer in self.layers:
