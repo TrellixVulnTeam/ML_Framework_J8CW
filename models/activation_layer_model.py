@@ -33,7 +33,7 @@ class ActivationLayerModel:
 
     def backward_propogate(self, grads):
         dZ = grads['dZ']
-        dZ = dZ * self.get_derivative(self.activation, self.forward_cache['A'])
+        dZ = dZ.T * self.get_derivative(self.activation, self.forward_cache['A'])
 
         self.backward_cache = {
             'dZ': dZ
@@ -46,7 +46,7 @@ class ActivationLayerModel:
     def update_weights(self):
         return self  # activation layers have no weights to update
 
-    def store_weights(self, directory=''):
+    def store_weights(self):
         return self  # no weights to save
 
     @staticmethod

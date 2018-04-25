@@ -1,5 +1,6 @@
 import numpy as np
 from services.weight_initializer_service import DenseNNWeightInitializerService
+from pathlib import Path
 
 
 class FullyConnectedLayerModel:
@@ -17,24 +18,31 @@ class FullyConnectedLayerModel:
         self.alpha = alpha
         self.forward_cache = {}
         self.backward_cache = {}
+        self.update_params = {
+            'sdW': 0,
+            'sdb': 0,
+            'vdW': 0,
+            'vdb': 0,
+            'beta_one': 0.9,
+            'beta_two': 0.999,
+            'epsilon': 10e-8
+        }
         self.__load_weights()
 
     def __load_weights(self):
-        weights = {
-            'W': np.loadtxt('stored/' + self.name + '_W'),
-            'b': np.loadtxt('stored/' + self.name + '_b')
-        }
-        if weights['W'] and weights['b']:
-            self.W, self.b = weights['W'], weights['b']
-        else:
-            self.W, self.b = DenseNNWeightInitializerService.random_initialize_weights([self.units_in, self.units_out])
+        W, b = DenseNNWeightInitializerService.random_initialize_weights([self.units_in, self.units_out])
+        W = W.reshape(self.units_out, self.units_in)
+        b = b.reshape(1, self.units_out)
+
+        self.W, self.b = W, b
 
     def forward_propogate(self, A_prev):
         # get dims and use them to flatten A_prev
-        m, n_H, n_W, n_C = A_prev.shape
-        A_prev_reshaped = A_prev.reshape(m, n_H * n_W * n_C) if len(A_prev.shape) > 2 else A_prev
+        if len(A_prev.shape) > 2:
+            m, n_H, n_W, n_C = A_prev.shape
+            A_prev = A_prev.reshape(m, n_H * n_W * n_C)
 
-        a = A_prev_reshaped.dot(self.W.T)
+        a = A_prev.dot(self.W.T)
         a += self.b
 
         self.forward_cache = {
@@ -48,9 +56,11 @@ class FullyConnectedLayerModel:
 
     def backward_propogate(self, grads):
         dZ = grads['dZ']
-        m, n_H, n_W, n_C = self.forward_cache['A_prev'].shape
-        A_prev_reshaped = self.forward_cache['A_prev'].reshape(m, n_H * n_W * n_C) if len(self.forward_cache['A_prev'].shape) > 2 else self.forward_cache['A_prev']
-        dW = (A_prev_reshaped.T.dot(dZ)).T / self.m
+        A_prev = self.forward_cache['A_prev']
+        if len(A_prev.shape) > 2:
+            m, n_H, n_W, n_C = self.forward_cache['A_prev'].shape
+            A_prev = self.forward_cache['A_prev'].reshape(m, n_H * n_W * n_C)
+        dW = (A_prev.T.dot(dZ)).T / self.m
         db = np.sum(dZ) / self.m
 
         # update dZ for previous layer output
@@ -66,15 +76,32 @@ class FullyConnectedLayerModel:
             'dZ': dZ
         }
 
-    def update_weights(self):
-        self.W -= self.alpha * self.backward_cache['dW']
-        self.b -= self.alpha * self.backward_cache['db']
+    def update_weights(self, iteration: int):
+        # update_param_W, update_param_b = self.backward_cache['dW'], self.backward_cache['db']
+        update_param_W, update_param_b = self.compute_momentum_params(iteration)
+
+        self.W -= self.alpha * update_param_W
+        self.b -= self.alpha * update_param_b
+
         return self
 
     def store_weights(self):
         fW = self.W.flatten()
         fb = self.b.flatten()
-        np.savetxt(self.name + '_W', fW)
-        np.savetxt(self.name + '_b', fb)
+        np.savetxt('stored/' + self.name + '_W', fW)
+        np.savetxt('stored/' + self.name + '_b', fb)
 
         return self
+
+    def compute_momentum_params(self, iteration: int):
+        # compute momentum gradients
+        vdW = (self.update_params['beta_one'] * self.update_params['vdW']) + (1 - self.update_params['beta_one']) * self.backward_cache['dW']
+        vdb = (self.update_params['beta_one'] * self.update_params['vdb']) + (1 - self.update_params['beta_one']) * self.backward_cache['db']
+        # set as corrected grads
+        self.update_params['vdW'] = vdW / (1 - np.power(self.update_params['beta_one'], iteration))
+        self.update_params['vdb'] = vdb / (1 - np.power(self.update_params['beta_one'], iteration))
+
+        update_param_W = self.update_params['vdW']
+        update_param_b = self.update_params['vdb']
+
+        return update_param_W, update_param_b
