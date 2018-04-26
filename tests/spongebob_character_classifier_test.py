@@ -2,7 +2,7 @@
 
 from services.data_preprocessor_service import DataPreprocessorService
 from classifiers.spongebob_character_classifier import SpongebobCharacterClassifier
-from models import *
+from models import data_model, fully_connected_layer_model, activation_layer_model
 
 
 class SpongebobCharacterClassifierTest:
@@ -30,7 +30,7 @@ class SpongebobCharacterClassifierTest:
         ]
 
         # instantiate classifier model
-        classifier_model = SpongebobCharacterClassifier(self.data_model, 100, layers)
+        classifier_model = SpongebobCharacterClassifier(self.data_model, 1000, layers)
 
         # train model
         classifier_model.train()

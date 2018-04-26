@@ -7,5 +7,5 @@ classifier = test.run()
 
 jhist = classifier.cost_history
 plt.title = 'Cost History'
-plt.plot(range(0, 100), jhist)
+plt.plot(range(0, 1000), jhist)
 plt.show()

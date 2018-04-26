@@ -11,7 +11,8 @@ class SpongebobCharacterClassifier:
     def __init__(self,
                  data: DataModel,
                  epochs: int,
-                 layers: list
+                 layers: list,
+                 gradient_check: bool = False
                  ):
         self.data = data
         self.epochs = epochs
@@ -19,6 +20,7 @@ class SpongebobCharacterClassifier:
         self.prediction = None
         self.cost_history = []
         self.y_pred = []
+        self.gradient_check = gradient_check
 
     # train model using this CNN architecture: X -> CONV -> POOL -> FC -> SOFTMAX
     def train(self):
@@ -36,7 +38,7 @@ class SpongebobCharacterClassifier:
             # use cost to perform backpropogations across the layers
             self.backward_propogate()
 
-            # self.gradient_check(self.layers[0])
+            self.check_gradients(self.layers[0]) if self.gradient_check else None
 
             # update the weights
             self.update_weights(epoch + 1)  # plus 1 to avoid divide by zero in momentum
@@ -80,7 +82,7 @@ class SpongebobCharacterClassifier:
             if hasattr(layer, 'W') and hasattr(layer, 'b'):
                 layer.store_weights()
 
-    def gradient_check(self, layer):
+    def check_gradients(self, layer):
         # get grads from layer
         grads = layer.backward_cache['dW']
         # flatten layer W
