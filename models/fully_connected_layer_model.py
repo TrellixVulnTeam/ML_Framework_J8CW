@@ -8,12 +8,10 @@ class FullyConnectedLayerModel:
     def __init__(self,
                  units_in: int,
                  units_out: int,
-                 m: int,
                  name: str,
                  alpha: float = 1.0):
         self.units_in = units_in
         self.units_out = units_out
-        self.m = m
         self.name = name
         self.alpha = alpha
         self.forward_cache = {}
@@ -60,8 +58,10 @@ class FullyConnectedLayerModel:
         if len(A_prev.shape) > 2:
             m, n_H, n_W, n_C = self.forward_cache['A_prev'].shape
             A_prev = self.forward_cache['A_prev'].reshape(m, n_H * n_W * n_C)
-        dW = (A_prev.T.dot(dZ)).T / self.m
-        db = np.sum(dZ) / self.m
+        else:
+            m, n = A_prev.shape
+        dW = (A_prev.T.dot(dZ)).T / m
+        db = np.sum(dZ) / m
 
         # update dZ for previous layer output
         dZ = self.W.T.dot(dZ.T)

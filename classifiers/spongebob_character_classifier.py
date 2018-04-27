@@ -2,6 +2,7 @@
 import numpy as np
 from models.data_model import DataModel
 import matplotlib.pyplot as plt
+from services.gradient_check_service import GradientCheckService
 
 
 class SpongebobCharacterClassifier:
@@ -23,22 +24,25 @@ class SpongebobCharacterClassifier:
         self.gradient_check = gradient_check
 
     # train model using this CNN architecture: X -> CONV -> POOL -> FC -> SOFTMAX
-    def train(self):
+    def train(self, x, y):
+        # self.display_data(x, y)
         # loop over epochs and perform gradient descent
         for epoch in range(self.epochs):
             print('Epoch: ' + str(epoch))
+
             # forward propogate and get predictions
-            self.y_pred = self.forward_propogate(self.data.x)
+            self.y_pred = self.forward_propogate(x)
 
             # compute the cost and use it to track J_history
-            cost = self.compute_cost(self.data.y, self.y_pred)
+            cost = self.compute_cost(y, self.y_pred)
+
             print('Cost: ' + str(cost))
             self.cost_history.append(cost)
 
             # use cost to perform backpropogations across the layers
-            self.backward_propogate()
+            self.backward_propogate(y)
 
-            self.check_gradients(self.layers[0]) if self.gradient_check else None
+            GradientCheckService.check_gradients(self.layers[0], self) if self.gradient_check else None
 
             # update the weights
             self.update_weights(epoch + 1)  # plus 1 to avoid divide by zero in momentum
@@ -51,12 +55,12 @@ class SpongebobCharacterClassifier:
 
     def compute_cost(self, y, y_prediction):
         m = y.shape[0]
-        cost = -(np.sum(y * np.log(y_prediction + 0.001) + (1 - y) * np.log(1 - y_prediction + 0.001))) / m  # added + 0.001 to avoid log of zeros
+        cost = -(np.sum(y * np.log(y_prediction + 0.001) + (1 - y) * np.log(1 - y_prediction + 0.00000001))) / m  # added + 0.00000001 to avoid log of zeros
         return cost
 
-    def backward_propogate(self):
+    def backward_propogate(self, y):
         # get starting grad for y prediction
-        dZ = np.subtract(self.y_pred, self.data.y)
+        dZ = np.subtract(self.y_pred, y)
 
         grads = {
             'dZ': dZ
@@ -82,44 +86,9 @@ class SpongebobCharacterClassifier:
             if hasattr(layer, 'W') and hasattr(layer, 'b'):
                 layer.store_weights()
 
-    def check_gradients(self, layer):
-        # get grads from layer
-        grads = layer.backward_cache['dW']
-        # flatten layer W
-        shape = layer.W.shape
-        W_flat = layer.W.flatten()
-
-        epsilon = 0.001
-
-        print('Numerical Grad', 'Computed Grad')
-        # loop through first few W's
-        for i in range(0, 10):
-            W_initial = W_flat[i]
-            W_plus = W_initial + epsilon
-            W_minus = W_initial - epsilon
-
-            W_flat[i] = W_plus
-            layer.W = W_flat.reshape(shape)
-            pred = self.forward_propogate(self.data.x)
-            cost_plus = self.compute_cost(self.data.y, pred)
-
-            W_flat[i] = W_minus
-            layer.W = W_flat.reshape(shape)
-            pred = self.forward_propogate(self.data.x)
-            cost_minus = self.compute_cost(self.data.y, pred)
-
-            computed_grad = (cost_plus - cost_minus) / (2 * epsilon)
-
-            print(grads.flatten()[i], computed_grad)
-
-            # reset layers W's
-            W_flat[i] = W_initial
-            layer.W = W_flat.reshape(shape)
-
-        return layer
-
-    def display_data(self):
-        for i, image in enumerate(self.data.x):
+    @staticmethod
+    def display_data(x, y):
+        for i, image in enumerate(x):
             plt.imshow(image)
-            plt.title(np.argmax(self.data.y[i]))
+            plt.title(np.argmax(y[i]))
             plt.show()

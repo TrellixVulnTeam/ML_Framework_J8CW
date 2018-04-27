@@ -9,6 +9,23 @@ import numpy as np
 class DataPreprocessorService:
 
     @staticmethod
+    def load_data():
+        data = dict(x_train=None, y_train=None, x_val=None, y_val=None)
+
+        data['x_train'], data['y_train'] = DataPreprocessorService.load_datasets('train')
+        data['x_val'], data['y_val'] = DataPreprocessorService.load_datasets('cv')
+
+        return data
+
+    @staticmethod
+    def load_datasets(training_phase):
+        imagesets = DataPreprocessorService.load_imagesets(training_phase)
+        imageset = DataPreprocessorService.merge_imagesets(imagesets)
+        shuffled_imageset = DataPreprocessorService.unison_shuffle_images_labels(imageset['x'], imageset['y'])
+
+        return shuffled_imageset['x'], shuffled_imageset['y']
+
+    @staticmethod
     def load_imagesets(data_type: str):
         imagesets = []
         directory = 'datasets/' + data_type
