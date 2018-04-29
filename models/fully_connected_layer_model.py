@@ -116,4 +116,5 @@ class FullyConnectedLayerModel:
 
     def compute_gradient_regularization(self, weights, lamda: int):
         m = self.forward_cache['A_prev'].shape[0]
+
         return (lamda / m) * weights
