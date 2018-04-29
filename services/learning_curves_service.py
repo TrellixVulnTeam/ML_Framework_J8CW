@@ -1,16 +1,24 @@
+from classifiers.spongebob_character_classifier import SpongebobCharacterClassifier
+from services.data_preprocessor_service import DataPreprocessorService as dps
+from services.layer_initializer_service import LayerInitializerService
+from models.data_model import DataModel
 
 
 class LearningCurvesService:
 
     @staticmethod
-    def compute_learning_curves(train_data, cv_data, classifier, batch_size):
-        initial_classifier = classifier  # preserves state of classifier before training
-        x_train, y_train = train_data
-        x_val, y_val = cv_data
+    def compute_learning_curves(batch_size):
+        data = dps.load_data()
+        data_model = DataModel(data, 7, [100, 100])
 
         costs = {'train_cost': [], 'val_cost': []}
-        for i in range(int(len(x_train) / batch_size)):
+        for i in range(int(len(data_model.x_train) / batch_size)):
             end = (i + 1) * batch_size
+
+            layers = LayerInitializerService.load_layers(7, 0.01)
+            classifier = SpongebobCharacterClassifier(data_model, 1000, layers)
+            x_train, y_train = classifier.data.x_train, classifier.data.y_train
+            x_val, y_val = classifier.data.x_val, classifier.data.y_val
 
             # train on train data
             x_train_batch = x_train[0:end]
@@ -21,16 +29,11 @@ class LearningCurvesService:
             train_cost = classifier.compute_cost(y_train_batch, classifier.y_pred)
 
             # get cost on cv data
-            x_val_batch = x_val[0:end]
-            y_val_batch = y_val[0:end]
-
-            y_val_pred = classifier.forward_propogate(x_val_batch)
-            cv_cost = classifier.compute_cost(y_val_batch, y_val_pred)
+            y_val_pred = classifier.forward_propogate(x_val)
+            cv_cost = classifier.compute_cost(y_val, y_val_pred)
 
             print(train_cost)
             costs['train_cost'].append(train_cost)
             costs['val_cost'].append(cv_cost)
-
-            classifier = initial_classifier
 
         return costs

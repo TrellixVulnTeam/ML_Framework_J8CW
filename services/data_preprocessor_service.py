@@ -20,7 +20,8 @@ class DataPreprocessorService:
     @staticmethod
     def load_datasets(training_phase):
         imagesets = DataPreprocessorService.load_imagesets(training_phase)
-        imageset = DataPreprocessorService.merge_imagesets(imagesets)
+        mirrored_imagesets = DataPreprocessorService.mirror_imagesets(imagesets)
+        imageset = DataPreprocessorService.merge_imagesets(mirrored_imagesets)
         shuffled_imageset = DataPreprocessorService.unison_shuffle_images_labels(imageset['x'], imageset['y'])
 
         return shuffled_imageset['x'], shuffled_imageset['y']
@@ -51,6 +52,27 @@ class DataPreprocessorService:
         return imagesets
 
     @staticmethod
+    def mirror_imagesets(imagesets):
+        for i, imageset in enumerate(imagesets):
+            y = imageset['y']
+            x = imageset['x']
+
+            mirrored_x = []
+            mirrored_y = y
+            for image in x:
+                mirrored_x.append(np.fliplr(image))
+
+            y += mirrored_y
+            x += mirrored_x
+
+            imageset['x'] = x
+            imageset['y'] = y
+
+            imagesets[i] = imageset
+
+        return imagesets
+
+    @staticmethod
     def merge_imagesets(imagesets: list):
         merged_images = []
         merged_labels = []
@@ -65,7 +87,7 @@ class DataPreprocessorService:
 
     @staticmethod
     def preprocess_imageset(imageset, image_size: list):
-        processed_imageset = np.zeros((len(imageset), image_size[0], image_size[1], imageset[0].shape[2]))
+        processed_imageset = np.zeros((len(imageset), image_size[0], image_size[1], 3))
         for i, image in enumerate(imageset):
             image = image[:, :, 0:3]
             image = it.square_crop_image(image)

@@ -28,7 +28,7 @@ class SpongebobCharacterClassifier:
         # self.display_data(x, y)
         # loop over epochs and perform gradient descent
         for epoch in range(self.epochs):
-            print('Epoch: ' + str(epoch))
+            # print('Epoch: ' + str(epoch))
 
             # forward propogate and get predictions
             self.y_pred = self.forward_propogate(x)
@@ -36,7 +36,7 @@ class SpongebobCharacterClassifier:
             # compute the cost and use it to track J_history
             cost = self.compute_cost(y, self.y_pred)
 
-            print('Cost: ' + str(cost))
+            # print('Cost: ' + str(cost))
             self.cost_history.append(cost)
 
             # use cost to perform backpropogations across the layers
