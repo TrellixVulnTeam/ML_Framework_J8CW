@@ -1,6 +1,5 @@
 import numpy as np
 from services.weight_initializer_service import DenseNNWeightInitializerService
-from pathlib import Path
 
 
 class FullyConnectedLayerModel:
@@ -8,12 +7,10 @@ class FullyConnectedLayerModel:
     def __init__(self,
                  units_in: int,
                  units_out: int,
-                 m: int,
                  name: str,
                  alpha: float = 1.0):
         self.units_in = units_in
         self.units_out = units_out
-        self.m = m
         self.name = name
         self.alpha = alpha
         self.forward_cache = {}
@@ -54,14 +51,19 @@ class FullyConnectedLayerModel:
 
         return a
 
-    def backward_propogate(self, grads):
+    def backward_propogate(self, grads, lamda: int):
         dZ = grads['dZ']
         A_prev = self.forward_cache['A_prev']
         if len(A_prev.shape) > 2:
             m, n_H, n_W, n_C = self.forward_cache['A_prev'].shape
             A_prev = self.forward_cache['A_prev'].reshape(m, n_H * n_W * n_C)
-        dW = (A_prev.T.dot(dZ)).T / self.m
-        db = np.sum(dZ) / self.m
+        else:
+            m, n = A_prev.shape
+        dW = (A_prev.T.dot(dZ)).T / m
+        dW += self.compute_gradient_regularization(self.W, lamda)
+
+        db = np.sum(dZ) / m
+        db += self.compute_gradient_regularization(self.b, lamda)
 
         # update dZ for previous layer output
         dZ = self.W.T.dot(dZ.T)
@@ -105,3 +107,14 @@ class FullyConnectedLayerModel:
         update_param_b = self.update_params['vdb']
 
         return update_param_W, update_param_b
+
+    def compute_cost_regularization(self, lamda: int):
+        m = self.forward_cache['A_prev'].shape[0]
+        frob_norm = np.sum(np.square(self.W))
+
+        return (lamda / (2 * m)) * frob_norm
+
+    def compute_gradient_regularization(self, weights, lamda: int):
+        m = self.forward_cache['A_prev'].shape[0]
+
+        return (lamda / m) * weights

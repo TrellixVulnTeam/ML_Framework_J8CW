@@ -31,7 +31,7 @@ class ActivationLayerModel:
 
         return A_activated
 
-    def backward_propogate(self, grads):
+    def backward_propogate(self, grads, lamda: int):
         dZ = grads['dZ']
         dZ = dZ.T * self.get_derivative(self.activation, self.forward_cache['A'])
 

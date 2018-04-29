@@ -11,6 +11,8 @@ __pycache__/
 # virtualenv
 .venv/
 venv/
+.venv1/
+venv1/
 ENV/
 
 # idea

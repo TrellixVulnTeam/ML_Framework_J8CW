@@ -1,11 +1,12 @@
 from tests.spongebob_character_classifier_test import SpongebobCharacterClassifierTest
-import matplotlib.pyplot as plt
 
 
-test = SpongebobCharacterClassifierTest(7, 'train')
+test = SpongebobCharacterClassifierTest(7, 1000)
 classifier = test.run()
+train_f1 = classifier.compute_f1_score('train')
+cv_f1 = classifier.compute_f1_score('cv')
+test_f1 = classifier.compute_f1_score('test')
 
-jhist = classifier.cost_history
-plt.title = 'Cost History'
-plt.plot(range(0, 100), jhist)
-plt.show()
+print('Train F1 Score: ' + str(train_f1))
+print('CV F1 Score: ' + str(cv_f1))
+print('Test F1 Score: ' + str(test_f1))
