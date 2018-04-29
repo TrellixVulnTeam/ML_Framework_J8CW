@@ -30,13 +30,17 @@ are among the following:</p>
     <li>Test: 95%</li>
 </ul>
 
-<h3>Instructions:</h3>
+<h3>Instructions</h3>
 <p>To test the tool:</p>
 <ol>
     <li>Download or clone this repository
     <li>Find a quality image of your favorite Spongebob Character</li>
-    <li>Save the image to the directory: <em>SpongebobCharacterClassifier/datasets/user_images</em></li>
+    <li>Save the image to the directory: <em>SpongebobCharacterClassifier/datasets/user_images</em> (make sure there is only 1 image in the directory)</li>
     <li>Run <em>main.py</em></li>
 </ol>
 
 <p>Once the process finishes, you should see a plot of your chosen character image, labeled with the correct character name :)</p>
+
+<h3>Future Plans</h3>
+The system does a poor job on Mr. Krabs, prefering to predict Patrick Star instead. Aside from their similar shape, I'm not immediately sure why this could be.
+Next steps would be to address this shortcoming.</p>

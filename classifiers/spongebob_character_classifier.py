@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from services.gradient_check_service import GradientCheckService
 from helpers.prediction_helper import PredictionHelper
 from sklearn.metrics import f1_score
+from helpers.class_to_character_helper import ClassToCharacterHelper
 
 class SpongebobCharacterClassifier:
 
@@ -31,7 +32,7 @@ class SpongebobCharacterClassifier:
         # self.display_data(x, y)
         # loop over epochs and perform gradient descent
         for epoch in range(self.epochs):
-            print('Epoch: ' + str(epoch))
+            print('Epoch: ' + str(epoch) + ' / ' + str(self.epochs))
 
             # forward propogate and get predictions
             self.y_pred = self.forward_propogate(x)
@@ -101,8 +102,10 @@ class SpongebobCharacterClassifier:
     @staticmethod
     def display_data(x, y):
         for i, image in enumerate(x):
+            class_prediction = PredictionHelper.predict(y[i])
+            character_name = ClassToCharacterHelper.character_map[class_prediction]
             plt.imshow(image)
-            plt.title(np.argmax(y[i]))
+            plt.title(character_name)
             plt.show()
 
     def compute_f1_score(self, dataset):

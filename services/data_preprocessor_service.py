@@ -13,6 +13,7 @@ class DataPreprocessorService:
 
         data['x_train'], data['y_train'] = DataPreprocessorService.load_datasets('train')
         data['x_val'], data['y_val'] = DataPreprocessorService.load_datasets('cv')
+        data['x_test'], data['y_test'] = DataPreprocessorService.load_datasets('test')
 
         return data
 
