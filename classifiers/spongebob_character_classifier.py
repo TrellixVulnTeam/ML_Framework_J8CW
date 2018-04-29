@@ -13,6 +13,7 @@ class SpongebobCharacterClassifier:
                  data: DataModel,
                  epochs: int,
                  layers: list,
+                 lamda: float,
                  gradient_check: bool = False
                  ):
         self.data = data
@@ -20,7 +21,8 @@ class SpongebobCharacterClassifier:
         self.layers = layers
         self.prediction = None
         self.cost_history = []
-        self.y_pred = []
+        self.y_pred = [],
+        self.lamda = lamda
         self.gradient_check = gradient_check
 
     # train model using this CNN architecture: X -> CONV -> POOL -> FC -> SOFTMAX
@@ -56,7 +58,16 @@ class SpongebobCharacterClassifier:
     def compute_cost(self, y, y_prediction):
         m = y.shape[0]
         cost = -(np.sum(y * np.log(y_prediction + 0.001) + (1 - y) * np.log(1 - y_prediction + 0.00000001))) / m  # added + 0.00000001 to avoid log of zeros
+        cost += self.compute_cost_regularization()
         return cost
+
+    def compute_cost_regularization(self):
+        reg_sum = 0
+        for layer in self.layers:
+            if hasattr(layer, 'W') and hasattr(layer, 'b'):
+                reg_sum += layer.compute_cost_regularization(self.lamda)
+
+        return reg_sum
 
     def backward_propogate(self, y):
         # get starting grad for y prediction
@@ -70,7 +81,7 @@ class SpongebobCharacterClassifier:
         self.layers[len(self.layers) - 1].backward_cache = grads
 
         for layer in reversed(self.layers[:-1]):  # skip output layer as it is computed above
-            grads = layer.backward_propogate(grads)
+            grads = layer.backward_propogate(grads, self.lamda)
 
         return grads
 

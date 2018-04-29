@@ -16,7 +16,7 @@ class LearningCurvesService:
             end = (i + 1) * batch_size
 
             layers = LayerInitializerService.load_layers(7, 0.01)
-            classifier = SpongebobCharacterClassifier(data_model, 1000, layers)
+            classifier = SpongebobCharacterClassifier(data_model, 1000, layers, 1)
             x_train, y_train = classifier.data.x_train, classifier.data.y_train
             x_val, y_val = classifier.data.x_val, classifier.data.y_val
 
