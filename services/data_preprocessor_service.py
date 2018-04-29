@@ -5,7 +5,6 @@ import sklearn.utils as utils
 from os import listdir
 import numpy as np
 
-
 class DataPreprocessorService:
 
     @staticmethod

@@ -3,7 +3,8 @@ import numpy as np
 from models.data_model import DataModel
 import matplotlib.pyplot as plt
 from services.gradient_check_service import GradientCheckService
-
+from helpers.prediction_helper import PredictionHelper
+from sklearn.metrics import f1_score
 
 class SpongebobCharacterClassifier:
 
@@ -30,7 +31,7 @@ class SpongebobCharacterClassifier:
         # self.display_data(x, y)
         # loop over epochs and perform gradient descent
         for epoch in range(self.epochs):
-            # print('Epoch: ' + str(epoch))
+            print('Epoch: ' + str(epoch))
 
             # forward propogate and get predictions
             self.y_pred = self.forward_propogate(x)
@@ -55,10 +56,10 @@ class SpongebobCharacterClassifier:
 
         return A_prev
 
-    def compute_cost(self, y, y_prediction):
+    def compute_cost(self, y, y_prediction, regularization: bool = True):
         m = y.shape[0]
         cost = -(np.sum(y * np.log(y_prediction + 0.001) + (1 - y) * np.log(1 - y_prediction + 0.00000001))) / m  # added + 0.00000001 to avoid log of zeros
-        cost += self.compute_cost_regularization()
+        cost += self.compute_cost_regularization() if regularization else 0
         return cost
 
     def compute_cost_regularization(self):
@@ -103,3 +104,21 @@ class SpongebobCharacterClassifier:
             plt.imshow(image)
             plt.title(np.argmax(y[i]))
             plt.show()
+
+    def compute_f1_score(self, dataset):
+        if dataset == 'train':
+            x = self.data.x_train
+            y_true = np.argmax(self.data.y_train, axis=1)
+        elif dataset == 'cv':
+            x = self.data.x_val
+            y_true = np.argmax(self.data.y_val, axis=1)
+        elif dataset == 'test':
+            x = self.data.x_test
+            y_true = np.argmax(self.data.y_test, axis=1)
+
+        output = self.forward_propogate(x)
+        y_preds = PredictionHelper.predict(output)
+
+        f1score = f1_score(y_true, y_preds, average='weighted')
+
+        return f1score

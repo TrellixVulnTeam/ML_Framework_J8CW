@@ -7,7 +7,7 @@ from models.data_model import DataModel
 class LearningCurvesService:
 
     @staticmethod
-    def compute_learning_curves(batch_size):
+    def compute_learning_curves(batch_size, lamda):
         data = dps.load_data()
         data_model = DataModel(data, 7, [100, 100])
 
@@ -16,7 +16,7 @@ class LearningCurvesService:
             end = (i + 1) * batch_size
 
             layers = LayerInitializerService.load_layers(7, 0.01)
-            classifier = SpongebobCharacterClassifier(data_model, 1000, layers, 2)
+            classifier = SpongebobCharacterClassifier(data_model, 1000, layers, lamda)
             x_train, y_train = classifier.data.x_train, classifier.data.y_train
             x_val, y_val = classifier.data.x_val, classifier.data.y_val
 
@@ -26,11 +26,11 @@ class LearningCurvesService:
             print(x_train_batch.shape)
 
             classifier.train(x_train_batch, y_train_batch)
-            train_cost = classifier.compute_cost(y_train_batch, classifier.y_pred)
+            train_cost = classifier.compute_cost(y_train_batch, classifier.y_pred, False)
 
             # get cost on cv data
             y_val_pred = classifier.forward_propogate(x_val)
-            cv_cost = classifier.compute_cost(y_val, y_val_pred)
+            cv_cost = classifier.compute_cost(y_val, y_val_pred, False)
 
             print(train_cost)
             costs['train_cost'].append(train_cost)

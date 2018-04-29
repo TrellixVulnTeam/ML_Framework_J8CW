@@ -23,11 +23,17 @@ are among the following:</p>
     <li>Output Activation --> Softmax activation layer</li>
 </ul>
 
+<p>The F1 scores for the datasets are:</p>
+<ul>
+    <li>Train: 100%
+    <li>Cross Validation: 96%
+    <li>Test: 95%</li>
+</ul>
 
 <h3>Instructions:</h3>
 <p>To test the tool:</p>
 <ol>
-    <li>Download or clone this repository.
+    <li>Download or clone this repository
     <li>Find a quality image of your favorite Spongebob Character</li>
     <li>Save the image to the directory: <em>SpongebobCharacterClassifier/datasets/user_images</em></li>
     <li>Run <em>main.py</em></li>

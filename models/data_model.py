@@ -10,3 +10,5 @@ class DataModel:
         self.y_train = dps.one_hot_encode(data['y_train'], num_classes)
         self.x_val = dps.preprocess_imageset(data['x_val'], image_size)
         self.y_val = dps.one_hot_encode(data['y_val'], num_classes)
+        self.x_test = dps.preprocess_imageset(data['x_test'], image_size)
+        self.y_test = dps.one_hot_encode(data['y_test'], num_classes)
