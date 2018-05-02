@@ -27,8 +27,9 @@ are among the following:</p>
 <ul>
     <li>Train: 100%
     <li>Cross Validation: 96%
-    <li>Test: 98%</li>
+    <li>Test: 99%</li>
 </ul>
+<p>As you can see, the model does a better job on the test set than on the cross validation set, which, since the datasets are small, implies overfitting.</p>
 
 <h3>Instructions</h3>
 <p>To test the tool:</p>
