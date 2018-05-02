@@ -14,9 +14,9 @@ directory = 'datasets/user_images'
 if listdir(directory):
     print("Setting up classifier...")
     data = dps.load_data()
-    data_model = DataModel(data, 7, [100, 100])
+    data_model = DataModel(data, 7, [150, 150])
     layers = LayerInitializerService.load_layers(7, 0.01)
-    classifier = SpongebobCharacterClassifier(data_model, 500, layers, 5)
+    classifier = SpongebobCharacterClassifier(data_model, 1000, layers, 5)
 
     print("Training classifier... this may take a couple minutes")
     classifier.train(classifier.data.x_train, classifier.data.y_train)
@@ -27,7 +27,7 @@ if listdir(directory):
     print("Testing on your image...")
     image_name = listdir(directory)[0]
     image = imread(directory + '/' + image_name)
-    image = dps.preprocess_imageset([image], [100, 100])[0]
+    image = dps.preprocess_imageset([image], [150, 150])[0]
     inputs = np.zeros((1, image.shape[0], image.shape[1], image.shape[2]))
     inputs[0, :, :, :] = image
     pred = classifier.forward_propogate(inputs)

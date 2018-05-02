@@ -27,7 +27,7 @@ are among the following:</p>
 <ul>
     <li>Train: 100%
     <li>Cross Validation: 96%
-    <li>Test: 95%</li>
+    <li>Test: 98%</li>
 </ul>
 
 <h3>Instructions</h3>
