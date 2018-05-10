@@ -1,7 +1,6 @@
-<h1>Spongebob Character Classifier</h1>
+<h1>Machine Learning Framework</h1>
 <h3>Overview</h3>
-<p>This machine learning system will classify your favorite Spongebob Squarepants characters&mdash;assuming your favorite characters
-are among the following:</p>
+<p>This machine learning framework has been hacked together with Numpy to help solidify my understanding of machine learning. It was tested using data of my favorite spongebob characters. It can classify your favorite characters too, assuming they are the same as mine:</p>
 <ul>
     <li>Spongebob Squarepants</li>
     <li>Plankton</li>
